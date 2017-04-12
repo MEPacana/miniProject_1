@@ -27,15 +27,15 @@ public class TeazyDBMnpln {
 
             //Adding a student
             if (choice == 1) {
-                System.out.println("UserID,Password,Fname,Lname,School");
-                String tempUserID, tempPassword, tempFname, tempLname, tempSchool;
+                System.out.println("UserID,Password,fName,lName,School");
+                String tempUserID, tempPassword, tempFName, tempLName, tempSchool;
                 System.out.println("You have chosen to populate a Student database");
                 tempUserID = sc.next();
                 tempPassword = sc.next();
-                tempFname = sc.next();
-                tempLname = sc.next();
+                tempFName = sc.next();
+                tempLName = sc.next();
                 tempSchool = sc.next();
-                addStudentDB(tempUserID, tempPassword, tempFname, tempLname, tempSchool);
+                addStudentDB(tempUserID, tempPassword, tempFName, tempLName, tempSchool);
             }
             //Adding a task
             else if (choice == 2) {
@@ -55,7 +55,6 @@ public class TeazyDBMnpln {
                 String tempUserID, tempPassword;
                 tempUserID = sc.next();
                 tempPassword = sc.next();
-
                 //check if they match an account
                 if (usernamePasswordCheck(tempUserID, tempPassword)) {
                     System.out.println("Account Exists");
@@ -102,16 +101,77 @@ public class TeazyDBMnpln {
                     "\nDeadline: "+taskVector.get(i).getDeadline());
                 }
             }else if(choice == 7){
+                String tempUserID, tempfName, templName;
+                tempUserID =  sc.next();
+                tempfName = sc.next();
+                templName = sc.next();
 
+                updateName(tempUserID,tempfName,templName);
             }
             else if(choice == 8){
+                String tempUserID, tempUsername;
+                tempUserID =  sc.next();
+                tempUsername = sc.next();
 
+                updateUsername(tempUserID,tempUsername);
             }else if(choice ==9){
+                String tempUserID, tempPassword;
+                tempUserID =  sc.next();
+                tempPassword = sc.next();
 
+                updatePassword(tempUserID,tempPassword);
             }
         } while (choice != 0);
         System.exit(0);
     }
+    ////////////////////////////////////////// A D D T O D A T A B A S E ///////////////////////////////////////////////////////////////////
+    public static void addStudentDB(String userID, String password, String fname, String lname, String school){
+        String sMakeInsert = "INSERT INTO STUDENT VALUES('"+userID+"','"+password+"','"+ fname+"','"+lname+"','"+school+"')";
+        insertToDB(sMakeInsert); // general insert
+    }
+
+    public static void addTaskDB( String userID, String taskID, String description, String header, String category,String deadline){
+        String sMakeInsert = "INSERT INTO TASK VALUES('" + taskID + "','"+userID+"','" + description +
+                "','" + header + "','" + category + "','" + deadline +"')";
+        if(!usernameExists(userID)){
+            System.out.println("Username: "+userID+" does not exist");
+        }else {
+            insertToDB(sMakeInsert); // general insert
+        }
+    }
+
+    public static void insertToDB(String sMakeInsert){
+        try {
+            if (dbExists("TeazyDB.db")) {
+                System.out.println("Adding Database");
+                //try {
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                try {
+                    Statement stmt = conn.createStatement();
+                    try {
+                        stmt.executeUpdate(sMakeInsert);
+                    } finally {
+                        try {
+                            stmt.close();
+                        } catch (Exception ignore) {
+                        }
+                    }
+                }finally {
+                    try {
+                        conn.close();
+                    } catch (Exception ignore) {
+                    }
+                }
+            } else {
+                System.out.println("That Database does not yet exist");
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        System.out.println("Nakagawas");
+    }
+
+    ////////////////////////////////////////// C H E C K S///////////////////////////////////////////////////////////////////
 
     public static Vector<TaskClass> getTasks(String userID){
         Vector<TaskClass> taskVector = new Vector<TaskClass>();
@@ -260,6 +320,34 @@ public class TeazyDBMnpln {
         return false;
     }
 
+    public static boolean passwordExists(String password){
+        String sMakeSelect = new String("SELECT password FROM STUDENT WHERE password = ?");
+        try{
+            if(dbExists("TeazyDB.db")) {
+                try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                    PreparedStatement pstmt  = conn.prepareStatement(sMakeSelect)) {
+                    pstmt.setString(1, password);
+                    ResultSet rs = pstmt.executeQuery();
+                    if (!rs.isBeforeFirst()) {
+                        System.out.println("Password does not exist");
+                        return false;
+                    } else {
+                        while (rs.next()) {
+                            System.out.println("Password: "+rs.getString("password")+" exists");
+
+                        }
+                        return true;
+                    }
+                }
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        System.out.println("This shouldn't happen");
+        return false;
+    }
+
+    ///////////////////////////////////////////////// D E L E T E ///////////////////////////////////////////////////////////////////////
     public static boolean deleteTask(String userID, String taskID) {
         String sDeleteStud = new String("DELETE FROM TASK WHERE taskID = ? AND " +
                 " userID = ? ");
@@ -313,87 +401,62 @@ public class TeazyDBMnpln {
         }
         return true;
     }
+    ///////////////////////////////////////////////// U P D A T E  ///////////////////////////////////////////////////////////////////////
 
+    public static void updateName(String userID, String fName, String lName) {
+        String sUpdateName = "UPDATE STUDENT SET fname = ? , "
+                + "lname = ? "
+                + "WHERE userID = ?";
 
-    public static boolean passwordExists(String password){
-        String sMakeSelect = new String("SELECT password FROM STUDENT WHERE password = ?");
-       try{
-            if(dbExists("TeazyDB.db")) {
-                try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
-                    PreparedStatement pstmt  = conn.prepareStatement(sMakeSelect)) {
-                    pstmt.setString(1, password);
-                    ResultSet rs = pstmt.executeQuery();
-                    if (!rs.isBeforeFirst()) {
-                        System.out.println("Password does not exist");
-                        return false;
-                    } else {
-                        while (rs.next()) {
-                            System.out.println("Password: "+rs.getString("password")+" exists");
-
-                        }
-                        return true;
-                    }
-                }
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        System.out.println("This shouldn't happen");
-        return false;
-    }
-
-    public static void addStudentDB(String userID, String password, String fname, String lname, String school){
-        String sMakeInsert = "INSERT INTO STUDENT VALUES('"+userID+"','"+password+"','"+ fname+"','"+lname+"','"+school+"')";
-        insertToDB(sMakeInsert); // general insert
-    }
-
-    public static void addTaskDB( String userID, String taskID, String description, String header, String category,String deadline){
-        String sMakeInsert = "INSERT INTO TASK VALUES('" + taskID + "','"+userID+"','" + description +
-                                                        "','" + header + "','" + category + "','" + deadline +"')";
-        if(!usernameExists(userID)){
-            System.out.println("Username: "+userID+" does not exist");
-        }else {
-            insertToDB(sMakeInsert); // general insert
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+             PreparedStatement pstmt = conn.prepareStatement(sUpdateName)) {
+            // set the corresponding param
+            pstmt.setString(1, fName);
+            pstmt.setString(2, lName);
+            pstmt.setString(3, userID);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    public static void insertToDB(String sMakeInsert){
-        try {
-            if (dbExists("TeazyDB.db")) {
-                System.out.println("Adding Database");
-                //try {
-                Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
-                try {
-                    Statement stmt = conn.createStatement();
-                    try {
-                        stmt.executeUpdate(sMakeInsert);
-                    } finally {
-                        try {
-                            stmt.close();
-                        } catch (Exception ignore) {
-                        }
-                    }
-                }finally {
-                    try {
-                        conn.close();
-                    } catch (Exception ignore) {
-                    }
-                }
-            } else {
-                System.out.println("That Database does not yet exist");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
+    public static void updatePassword(String userID, String password) {
+        String sUpdateName = "UPDATE STUDENT SET password = ?"
+                + "WHERE userID = ?";
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+             PreparedStatement pstmt = conn.prepareStatement(sUpdateName)) {
+
+            // set the corresponding param
+            pstmt.setString(1, password);
+            pstmt.setString(2, userID);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        System.out.println("Nakagawas");
+    }
+
+    public static void updateUsername(String userID, String username) {
+        String sUpdateName = "UPDATE STUDENT SET userID = ?"
+                + "WHERE userID = ?";
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+             PreparedStatement pstmt = conn.prepareStatement(sUpdateName)) {
+
+            // set the corresponding param
+            pstmt.setString(1, username);
+            pstmt.setString(2, userID);
+            // update
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void databaseConnect(String sTempDb){
         int iTimeout = 30;
         String sMakeTable = "CREATE TABLE STUDENT (userID TEXT, password TEXT, fname TEXT, lname TEXT, school TEXT)";
         String sMakeTable2 = "CREATE TABLE TASK (taskID TEXT, userID TEXT, description TEXT, header TEXT, category TEXT,deadline TEXT)";
-        String sMakeInsert = "INSERT INTO dummy VALUES(1,'Hello from the database')";
-        String sMakeSelect = "SELECT response from dummy";
         String sJdbc = "jdbc:sqlite";
         String sDbUrl = sJdbc + ":" + sTempDb;
         try {
