@@ -65,6 +65,20 @@ public class LogIn extends BasicGameState {
                     if(!clickSnd.playing()) {
                         clickSnd.play();
                     }
+                    //ADDED THE CURRENT USER CLASS AND ITS COMPONENTS -CIONG
+                    CurrentUser.setUsername(username.getText());
+                    System.out.println("Current user username: " + CurrentUser.getUsername());
+                    CurrentUser.setPassword(password.getText());
+                    System.out.println("Current user password: " + CurrentUser.getPassword());
+                    CurrentUser.setFirstname(TeazyDBMnpln.getFName(username.getText()));
+                    System.out.println("Current user firstname: " + CurrentUser.getFirstname());
+                    CurrentUser.setLastname(TeazyDBMnpln.getLName(username.getText()));
+                    System.out.println("Current user lastname: " + CurrentUser.getLastname());
+                    CurrentUser.setCurrentschool(TeazyDBMnpln.getSchool(username.getText()));
+                    System.out.println("Current user school: " + CurrentUser.getCurrentschool());
+                    CurrentUser.setTaskcount(TeazyDBMnpln.getTaskCount(username.getText()));
+                    System.out.println("Current user taskcount: " + CurrentUser.getTaskcount());
+
                     initialize(username,password);
                     game.enterState(4); //go to main user
                 }else{
