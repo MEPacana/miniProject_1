@@ -2,13 +2,12 @@
  * Created by User on 4/4/2017.
  */
 public class TaskClass {
-    private String taskID, userID, description, header, category,deadline;
+    private String taskID, userID, description, category,deadline;
 
-    public TaskClass(String userID, String taskID, String description, String header, String category,String deadline) {
+    public TaskClass(String userID, String taskID, String description, String category,String deadline) {
         this.taskID = taskID;
         this.userID = userID;
         this.description = description;
-        this.header = header;
         this.category = category;
         this.deadline = deadline;
     }
@@ -33,10 +32,6 @@ public class TaskClass {
         this.description = description;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
     public void setCategory(String category) {
         this.category = category;
     }
@@ -51,10 +46,6 @@ public class TaskClass {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getHeader() {
-        return header;
     }
 
     public String getCategory() {

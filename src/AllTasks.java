@@ -82,7 +82,7 @@ public class AllTasks extends BasicGameState {
             iconthisweek = new Image("res/Components/04 home/iconthisweek.png");
             iconcategory = new Image("res/Components/04 home/iconcategory.png");
             selectorview = new Image("res/Components/04 home/selectorview.png");
-            empty = new Image("res/Components/04 home/empty.png");
+            empty = new Image(  "res/Components/04 home/empty.png");
             addnewcategory = new Image("res/Components/04 home/addnewcategory.png");
             fab = new Image("res/Components/04 home/fab.png");
             newTaskWindow = new Image("res/Components/04 home/newtaskwindow.png");

@@ -8,10 +8,10 @@ import org.newdawn.slick.state.StateBasedGame;
  * Created by Marie Curie on 01/04/2017.
  */
 public class SignUp extends BasicGameState {
-    public String mouse = "";
-    public TextField firstname, lastname, username, password, retypepass, currentschool;
-    boolean isFirstTimeUsername = true, isFirstTimePassword = true, isFirstTimeFirstName = true, isFirstTimeLastName = true, isFirstTimeRetypePass = true, isFirstTimeCurrentSchool = true;
-    Sound clickSnd, errorSnd;
+    private String mouse = "";
+    private TextField firstname, lastname, username, password, retypepass, currentschool;
+    private boolean isFirstTimeUsername = true, isFirstTimePassword = true, isFirstTimeFirstName = true, isFirstTimeLastName = true, isFirstTimeRetypePass = true, isFirstTimeCurrentSchool = true;
+    private Sound clickSnd, errorSnd;
     public SignUp(int signup) {
     }
 

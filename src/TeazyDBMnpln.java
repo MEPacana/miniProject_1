@@ -13,6 +13,7 @@ public class TeazyDBMnpln {
         String sDriverName = "org.sqlite.JDBC";
         Class.forName(sDriverName);
         Scanner sc = new Scanner(System.in);
+
         // now we set up a set of fairly basic string variables to use in the body of the code proper
         String sTempDb = "TeazyDB.db";
         // which will produce a legitimate Url for SqlLite JDBC :
@@ -21,8 +22,9 @@ public class TeazyDBMnpln {
         databaseConnect(sTempDb);
         do {
             System.out.println("Please choose the following: \n1. Add Student\n2. Add Task" +
-                    "\n3. Check Account \n4. Delete Student\n5. Delete Task\n6.Get Tasks\n7. Edit Name\n" +
-                    "8.Edit Username\n9.Edit Password");
+                    "\n3. Check Account \n4. Delete Student\n5. Delete Task\n6. Get Tasks\n7. Edit Name\n" +
+                    "8. Edit Username\n9. Edit Password\n10. Get First Name\n11. Get Last Name\n12. Get School" +
+                    "\n13. Get TaskCount");
             choice = sc.nextInt();
 
             //Adding a student
@@ -39,15 +41,14 @@ public class TeazyDBMnpln {
             }
             //Adding a task
             else if (choice == 2) {
-                System.out.println("UserID,TaskID,Desc,Header,Category,Deadline");
-                String  tempUserID, tempTaskID, tempDescription, tempHeader, tempCategory, tempDeadline;
+                System.out.println("UserID,Desc,Category,Deadline");
+                String  tempUserID, tempTaskID, tempDescription,tempCategory, tempDeadline;
                 tempUserID = sc.next();
-                tempTaskID = sc.next();
+                tempTaskID = generateTaskID(tempUserID);
                 tempDescription = sc.next();
-                tempHeader = sc.next();
                 tempCategory = sc.next();
                 tempDeadline = sc.next();
-                addTaskDB(tempUserID,tempTaskID, tempDescription, tempHeader, tempCategory, tempDeadline);
+                addTaskDB(tempUserID,tempTaskID, tempDescription, tempCategory, tempDeadline);
             }
             //Check if account exists
             //returns boolean if it already exists
@@ -89,13 +90,13 @@ public class TeazyDBMnpln {
                 String tempUserID;
                 tempUserID = sc.next();
                 //send UserID
+
                 //must be checked first if UserID exists
                 taskVector = getTasks(tempUserID);
                 System.out.println("Tasks");
                 for(int i = 0 ; i < taskVector.size() ; i++){
                     System.out.println("UserID: "+taskVector.get(i).getUserID()+
                     "\nTaskID: "+taskVector.get(i).getTaskID() +
-                    "\nHeader: "+taskVector.get(i).getHeader() +
                     "\nDescription: "+taskVector.get(i).getDescription()+
                     "\nCategory: "+taskVector.get(i).getDescription() +
                     "\nDeadline: "+taskVector.get(i).getDeadline());
@@ -121,6 +122,38 @@ public class TeazyDBMnpln {
 
                 updatePassword(tempUserID,tempPassword);
             }
+            else if(choice ==10){
+                String tempUserID,tempFName;
+                System.out.println("UserID");
+                tempUserID =  sc.next();
+
+                tempFName = getFName(tempUserID);
+                System.out.println("The first name is "+tempFName);
+            }
+            else if(choice == 11){
+                String tempUserID,tempLName;
+                System.out.println("UserID");
+                tempUserID =  sc.next();
+
+                tempLName = getLName(tempUserID);
+                System.out.println("The last name is "+tempLName);
+            }else if(choice == 12){
+                String tempUserID,school;
+                System.out.println("UserID");
+                tempUserID =  sc.next();
+
+                school = getSchool(tempUserID);
+                System.out.println("The school is "+school);
+            }
+            else if(choice == 13){
+                String tempUserID;
+                int taskNum;
+                System.out.println("UserID");
+                tempUserID =  sc.next();
+
+                taskNum = getTaskCount(tempUserID);
+                System.out.println("The count is "+taskNum);
+            }
         } while (choice != 0);
         System.exit(0);
     }
@@ -130,9 +163,9 @@ public class TeazyDBMnpln {
         insertToDB(sMakeInsert); // general insert
     }
 
-    public static void addTaskDB( String userID, String taskID, String description, String header, String category,String deadline){
+    public static void addTaskDB( String userID, String taskID, String description, String category,String deadline){
         String sMakeInsert = "INSERT INTO TASK VALUES('" + taskID + "','"+userID+"','" + description +
-                "','" + header + "','" + category + "','" + deadline +"')";
+                "','" + category + "','" + deadline +"')";
         if(!usernameExists(userID)){
             System.out.println("Username: "+userID+" does not exist");
         }else {
@@ -163,6 +196,7 @@ public class TeazyDBMnpln {
                     }
                 }
             } else {
+                databaseConnect("TeazyDB.db");
                 System.out.println("That Database does not yet exist");
             }
         }catch(SQLException e){
@@ -172,59 +206,6 @@ public class TeazyDBMnpln {
     }
 
     ////////////////////////////////////////// C H E C K S///////////////////////////////////////////////////////////////////
-
-    public static Vector<TaskClass> getTasks(String userID){
-        Vector<TaskClass> taskVector = new Vector<TaskClass>();
-        if (!usernameExists(userID)) {
-            System.out.println("Invalid username" + userID);
-        }else{
-            String sSelectTaskID = new String("SELECT taskID FROM TASK WHERE userID = ?");
-            String sSelectUserID = new String("SELECT userID FROM TASK WHERE userID = ?");
-            String sSelectdescription = new String("SELECT description FROM TASK WHERE userID = ?");
-            String sSelectheader = new String("SELECT header FROM TASK WHERE userID = ?");
-            String sSelectcategory = new String("SELECT category FROM TASK WHERE userID = ?");
-            String sSelectdeadline = new String("SELECT deadline FROM TASK WHERE userID = ?");
-            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
-                PreparedStatement pstmt = conn.prepareStatement(sSelectUserID);
-                PreparedStatement pstmt1 = conn.prepareStatement(sSelectTaskID);
-                PreparedStatement pstmt2 = conn.prepareStatement(sSelectdescription);
-                PreparedStatement pstmt3 = conn.prepareStatement(sSelectheader);
-                PreparedStatement pstmt4 = conn.prepareStatement(sSelectcategory);
-                PreparedStatement pstmt5 = conn.prepareStatement(sSelectdeadline)){
-
-                pstmt.setString(1,userID);
-                pstmt1.setString(1,userID);
-                pstmt2.setString(1,userID);
-                pstmt3.setString(1,userID);
-                pstmt4.setString(1,userID);
-                pstmt5.setString(1,userID);
-                ResultSet rs = pstmt.executeQuery();
-                ResultSet rs1 = pstmt1.executeQuery();
-                ResultSet rs2 = pstmt2.executeQuery();
-                ResultSet rs3 = pstmt3.executeQuery();
-                ResultSet rs4 = pstmt4.executeQuery();
-                ResultSet rs5 = pstmt5.executeQuery();
-
-                if(rs.getFetchSize() == rs1.getFetchSize() && rs1.getFetchSize() == rs2.getFetchSize() &&
-                        rs2.getFetchSize() == rs3.getFetchSize() && rs3.getFetchSize() == rs4.getFetchSize() &&
-                        rs4.getFetchSize() == rs5.getFetchSize()) {
-                    for(int i = 0; rs.next() && rs1.next() && rs2.next() && rs3.next() && rs4.next() && rs5.next()  ; i++) {
-                        System.out.println("Task with taskheader: " + rs1.getString("taskID") + "exists");
-
-                        taskVector.addElement(new TaskClass(rs.getString("userID"),rs1.getString("taskID"),rs2.getString("description"),
-                                rs3.getString("header"),rs4.getString("category"),rs5.getString("deadline")));
-                    }
-                    return taskVector;
-                }else{
-                    System.out.println("Something is wrong");
-                }
-            }catch(SQLException e){
-                e.printStackTrace();
-            }
-        }
-        System.out.println("this should not go here");
-        return taskVector;
-    }
 
     public static boolean usernamePasswordCheck(String username, String password) {
         String sMakeSelect = new String("SELECT userID FROM STUDENT WHERE userID = ?" +
@@ -257,6 +238,8 @@ public class TeazyDBMnpln {
                             return true;
                         }
                     }
+                }else{
+                    databaseConnect("TeazyDB.db");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -312,6 +295,10 @@ public class TeazyDBMnpln {
                         return true;
                     }
                 }
+            }else{
+                //Creating database
+                System.out.println("Database doesn't exist yet. Making database now.");
+                databaseConnect("TeazyDB.db");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -339,6 +326,10 @@ public class TeazyDBMnpln {
                         return true;
                     }
                 }
+            }else{
+                //Creating database
+                System.out.println("Database doesn't exist yet. Making database now.");
+                databaseConnect("TeazyDB.db");
             }
         }catch(SQLException e){
             e.printStackTrace();
@@ -363,11 +354,14 @@ public class TeazyDBMnpln {
                 if (dbExists("TeazyDB.db")) {
                     try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
                          PreparedStatement pstmt = conn.prepareStatement(sDeleteStud)) {
-
                         pstmt.setString(1, taskID);
                         pstmt.setString(2, userID);
                         pstmt.executeUpdate();
                     }
+                }else{
+                    //Creating database
+                    System.out.println("Database doesn't exist yet. Making database now.");
+                    databaseConnect("TeazyDB.db");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -388,12 +382,15 @@ public class TeazyDBMnpln {
                     try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
                          PreparedStatement pstmt = conn.prepareStatement(sDeleteStud);
                          PreparedStatement pstmt2 = conn.prepareStatement(sDeleteTasks);) {
-
                         pstmt.setString(1, userID);
                         pstmt.setString(1, userID);
                         pstmt.executeUpdate();
                         pstmt2.executeUpdate();
                     }
+                }else{
+                    //Creating database
+                    System.out.println("Database doesn't exist yet. Making database now.");
+                    databaseConnect("TeazyDB.db");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -452,11 +449,168 @@ public class TeazyDBMnpln {
             System.out.println(e.getMessage());
         }
     }
+/////////////////////////////////////////////// G E T T E R S//////////////////////////////////////////////////////////////////////////////////
+    public static Vector<TaskClass> getTasks(String userID){
+        Vector<TaskClass> taskVector = new Vector<TaskClass>();
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            String sSelectTaskID = new String("SELECT taskID FROM TASK WHERE userID = ?");
+            String sSelectUserID = new String("SELECT userID FROM TASK WHERE userID = ?");
+            String sSelectdescription = new String("SELECT description FROM TASK WHERE userID = ?");
+            String sSelectcategory = new String("SELECT category FROM TASK WHERE userID = ?");
+            String sSelectdeadline = new String("SELECT deadline FROM TASK WHERE userID = ?");
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                PreparedStatement pstmt = conn.prepareStatement(sSelectUserID);
+                PreparedStatement pstmt1 = conn.prepareStatement(sSelectTaskID);
+                PreparedStatement pstmt2 = conn.prepareStatement(sSelectdescription);
+                PreparedStatement pstmt4 = conn.prepareStatement(sSelectcategory);
+                PreparedStatement pstmt5 = conn.prepareStatement(sSelectdeadline)){
+
+                pstmt.setString(1,userID);
+                pstmt1.setString(1,userID);
+                pstmt2.setString(1,userID);
+                pstmt4.setString(1,userID);
+                pstmt5.setString(1,userID);
+                ResultSet rs = pstmt.executeQuery();
+                ResultSet rs1 = pstmt1.executeQuery();
+                ResultSet rs2 = pstmt2.executeQuery();
+                ResultSet rs4 = pstmt4.executeQuery();
+                ResultSet rs5 = pstmt5.executeQuery();
+
+                if(rs.getFetchSize() == rs1.getFetchSize() && rs1.getFetchSize() == rs2.getFetchSize() &&
+                        rs2.getFetchSize() == rs4.getFetchSize() &&
+                        rs4.getFetchSize() == rs5.getFetchSize()) {
+                    for(int i = 0; rs.next() && rs1.next() && rs2.next() && rs4.next() && rs5.next()  ; i++) {
+                        System.out.println("Task with taskheader: " + rs1.getString("taskID") + "exists");
+
+                        taskVector.addElement(new TaskClass(rs.getString("userID"),rs1.getString("taskID"),rs2.getString("description"),
+                                rs4.getString("category"),rs5.getString("deadline")));
+                    }
+                    return taskVector;
+                }else{
+                    System.out.println("Something is wrong");
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("this should not go here");
+        return taskVector;
+    }
+
+    public static String getFName(String userID){
+        String fName = "";
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            String sSelectFName = new String("SELECT fname FROM STUDENT WHERE userID = ?");
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                PreparedStatement pstmt = conn.prepareStatement(sSelectFName)){
+
+                pstmt.setString(1,userID);
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()) {
+                    System.out.println("Student has the first name: "+rs.getString("fname"));
+                        fName = rs.getString("fname");
+                    }
+                    return fName;
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("this should not go here");
+        return fName;
+    }
+    public static String getLName(String userID){
+        String lName = "";
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            String sSelectFName = new String("SELECT lname FROM STUDENT WHERE userID = ?");
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                PreparedStatement pstmt = conn.prepareStatement(sSelectFName)){
+
+                pstmt.setString(1,userID);
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()) {
+                    System.out.println("Student has the first name: "+rs.getString("lname"));
+                    lName = rs.getString("lname");
+                }
+                return lName;
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("this should not go here");
+        return lName;
+    }
+
+    public static int getTaskCount(String userID){
+        int tasknum = 0;
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            String sGetCount = new String("SELECT COUNT(*) AS rowcount FROM TASK WHERE userID = ?");
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                PreparedStatement pstmt = conn.prepareStatement(sGetCount)){
+
+                pstmt.setString(1,userID);
+                ResultSet rs = pstmt.executeQuery();
+                tasknum = rs.getInt("rowcount");
+                return tasknum;
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("this should not go here");
+        return tasknum;
+    }
+
+    public static String generateTaskID(String userID){
+        int taskID = getTaskCount(userID) +1;
+        String tempTaskID="error";
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            while(taskIDExists(tempTaskID = userID+taskID)){
+                System.out.println("tried: "+tempTaskID);
+                taskID++;
+            }
+            return tempTaskID;
+        }
+        System.out.println("this should not go here");
+        return tempTaskID;
+    }
+
+    public static String getSchool(String userID){
+        String school = "";
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            String sSelectFName = new String("SELECT lname FROM STUDENT WHERE userID = ?");
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                PreparedStatement pstmt = conn.prepareStatement(sSelectFName)){
+
+                pstmt.setString(1,userID);
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()) {
+                    System.out.println("Student has the first name: "+rs.getString("school"));
+                    school = rs.getString("school");
+                }
+                return school;
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("this should not go here");
+        return school;
+    }
 
     public static void databaseConnect(String sTempDb){
         int iTimeout = 30;
         String sMakeTable = "CREATE TABLE STUDENT (userID TEXT, password TEXT, fname TEXT, lname TEXT, school TEXT)";
-        String sMakeTable2 = "CREATE TABLE TASK (taskID TEXT, userID TEXT, description TEXT, header TEXT, category TEXT,deadline TEXT)";
+        String sMakeTable2 = "CREATE TABLE TASK (taskID TEXT, userID TEXT, description TEXT, category TEXT,deadline TEXT)";
         String sJdbc = "jdbc:sqlite";
         String sDbUrl = sJdbc + ":" + sTempDb;
         try {

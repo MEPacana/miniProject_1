@@ -1,6 +1,7 @@
 public class Task {
     String description, category, deadline;
     int[] deadlineInt = new int[3];
+
     public Task (){
         description = "<C'est un task default.>";
         category = "<C'est une categori default>";

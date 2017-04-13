@@ -8,10 +8,10 @@ import org.newdawn.slick.state.StateBasedGame;
  * Created by Marie Curie on 01/04/2017.
  */
 public class MainUser extends BasicGameState {
-    public String mouse = "";
-    public boolean addtask = false;
-    public TextField taskname, duedate, setcategory;
-    public boolean isFirstTimeTaskNameMU = true, isFirstTimeDueDateMU = true, isFirstTimeSetCategoryMU = true;
+    private String mouse = "";
+    private boolean addtask = false;
+    private TextField taskname, duedate, setcategory;
+    private boolean isFirstTimeTaskNameMU = true, isFirstTimeDueDateMU = true, isFirstTimeSetCategoryMU = true;
     public MainUser(int main) {
     }
 

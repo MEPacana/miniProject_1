@@ -7,8 +7,8 @@ import org.newdawn.slick.state.StateBasedGame;
  * Created by Marie Curie on 01/04/2017.
  */
 public class LandingState extends BasicGameState {
-    public String mouse = "";
-    Sound clickSnd;
+    private String mouse = "";
+    private Sound clickSnd;
 
     public LandingState(int menu) {
     }
