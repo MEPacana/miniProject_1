@@ -8,6 +8,7 @@ import org.newdawn.slick.state.StateBasedGame;
  */
 public class LandingState extends BasicGameState {
     public String mouse = "";
+    Sound clickSnd;
 
     public LandingState(int menu) {
     }
@@ -21,6 +22,7 @@ public class LandingState extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
+        clickSnd = new Sound("res/Sound/click.wav");
         container.setShowFPS(false);
     }
 
@@ -46,11 +48,17 @@ public class LandingState extends BasicGameState {
 
         if((xpos>316 && xpos<472) && (ypos>130 && ypos<165) ){
             if(input.isMouseButtonDown(0)){
+                if(!clickSnd.playing()) {
+                    clickSnd.play();
+                }
                 game.enterState(2); //go to sign up
             }
         }
         else if((xpos>314 && xpos<472) && (ypos>88 && ypos<123) ){
             if(input.isMouseButtonDown(0)){
+                if(!clickSnd.playing()) {
+                    clickSnd.play();
+                }
                 game.enterState(1); //go to log in
             }
         }

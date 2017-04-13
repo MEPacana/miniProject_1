@@ -4,16 +4,15 @@ import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-
 /**
  * Created by Marie Curie on 01/04/2017.
  */
 public class LogIn extends BasicGameState {
-    public String mouse = "";
-    public TextField username;
-    public TextField password;
-    boolean isFirstTimeUsername = true, isFirstTimePassword = true;
-
+    private String mouse = "";
+    private TextField username;
+    private TextField password;
+    private boolean isFirstTimeUsername = true, isFirstTimePassword = true;
+    private Sound clickSnd,errorSnd;
     public LogIn(int home) {
     }
 
@@ -24,6 +23,8 @@ public class LogIn extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
+        clickSnd = new Sound("res/Sound/click.wav");
+        errorSnd = new Sound("res/Sound/error.wav");
         container.setShowFPS(false);
         password = new TextField(container, container.getDefaultFont(), 284, 290, 224, 20);
         username = new TextField(container, container.getDefaultFont(), 284, 255, 224, 20);
@@ -36,7 +37,6 @@ public class LogIn extends BasicGameState {
         Image loginform = new Image("res/Components/03 log in/loginform.png");
         g.drawImage(bg,0,0);
         g.drawImage(loginform, 255,160);
-        //g.drawString(mouse, 50, 100);
         username.render(container,g);
         password.render(container,g);
     }
@@ -46,28 +46,31 @@ public class LogIn extends BasicGameState {
         int xpos = Mouse.getX();
         int ypos = Mouse.getY();
         mouse = "x pos = "+xpos+"   y pos = "+ypos;
-
         Input input = container.getInput();	//keyboard and mouse input
-
         if((xpos>288 && xpos<320) && (ypos>192 && ypos<205) ){
             if(input.isMouseButtonDown(0)){
+                if(!clickSnd.playing()) {
+                    clickSnd.play();
+                }
                 initialize(username,password);
                 isFirstTimeUsername = isFirstTimePassword = true;
                 game.enterState(0); //go to landing state
             }
         }
         else if((xpos>482 && xpos<502) && (ypos>192 && ypos<206) ){
-           // System.out.println(username.getText());
-           // System.out.println(password.getText());
             if(input.isMouseButtonDown(0)){
                 isFirstTimeUsername = isFirstTimePassword = true;
                 //Added Check
                 if(TeazyDBMnpln.usernamePasswordCheck(username.getText(),password.getText())) {
+                    if(!clickSnd.playing()) {
+                        clickSnd.play();
+                    }
                     initialize(username,password);
                     game.enterState(4); //go to main user
                 }else{
-                    System.out.println("SAYUUUUUUUUUUUUUUUUUUUUUUUUUUUUPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP\n"+
-                    username.getText()+"\n"+password.getText());
+                    if(!errorSnd.playing()){
+                        errorSnd.play();
+                    }
                 }
                 //Added Check
             }

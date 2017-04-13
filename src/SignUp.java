@@ -11,6 +11,7 @@ public class SignUp extends BasicGameState {
     public String mouse = "";
     public TextField firstname, lastname, username, password, retypepass, currentschool;
     boolean isFirstTimeUsername = true, isFirstTimePassword = true, isFirstTimeFirstName = true, isFirstTimeLastName = true, isFirstTimeRetypePass = true, isFirstTimeCurrentSchool = true;
+    Sound clickSnd, errorSnd;
     public SignUp(int signup) {
     }
 
@@ -21,6 +22,8 @@ public class SignUp extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
+        clickSnd = new Sound("res/Sound/click.wav");
+        errorSnd = new Sound("res/Sound/error.wav");
         container.setShowFPS(false);
         firstname = new TextField(container, container.getDefaultFont(), 291, 212, 126, 20);
         lastname = new TextField(container, container.getDefaultFont(), 425, 212, 90, 20);
@@ -55,6 +58,9 @@ public class SignUp extends BasicGameState {
         Input input = container.getInput();	//keyboard and mouse input
         if((xpos>296 && xpos<328) && (ypos>121 && ypos<134) ){
             if(input.isMouseButtonDown(0)){
+                if(!clickSnd.playing()){
+                    clickSnd.play();
+                }
                 initialize(firstname, lastname,username,password,retypepass,currentschool);
                 isFirstTimeFirstName = isFirstTimeLastName = isFirstTimeUsername = isFirstTimePassword = isFirstTimeRetypePass = isFirstTimeCurrentSchool = true;
                 game.enterState(0); //go to landing state
@@ -63,6 +69,9 @@ public class SignUp extends BasicGameState {
         else if((xpos>487 && xpos<509) && (ypos>122 && ypos<135) ){
             if(input.isMouseButtonDown(0)){
                 if(password.getText().equals(retypepass.getText())) {
+                    if(!clickSnd.playing()){
+                        clickSnd.play();
+                    }
                     isFirstTimeFirstName = isFirstTimeLastName = isFirstTimeUsername = isFirstTimePassword = isFirstTimeRetypePass = isFirstTimeCurrentSchool = true;
                     //Added this
                     TeazyDBMnpln.addStudentDB(username.getText(), password.getText(),
@@ -70,6 +79,10 @@ public class SignUp extends BasicGameState {
                     //Added this
                     initialize(firstname,lastname,username,password,retypepass,currentschool);
                     game.enterState(3); //go to main user
+                }else{
+                    if(!errorSnd.playing()){
+                        errorSnd.play();
+                    }
                 }
             }
         }
