@@ -15,6 +15,7 @@ import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.ResourceLoader;
+import org.omg.CORBA.Current;
 
 /**
  * Created by Marie Curie on 01/04/2017.
@@ -58,7 +59,7 @@ public class AllTasks extends BasicGameState {
     Image boxNotDone = null;
     Image textbox = null;
     Vector<Image> taskBoxVector = new Vector();
-    Vector<Task> taskVector = new Vector();
+    Vector<TaskClass> taskVector = new Vector();
     String[] views = new String[]{"All Tasks", "Today", "This Week"};
     TextField taskName, deadline, category;
 
@@ -97,10 +98,7 @@ public class AllTasks extends BasicGameState {
         sanFranUITxtRegJava = sanFranUITxtRegJava.deriveFont(Font.PLAIN, 12.f);
         sanFranUITxtBoldJava = sanFranUITxtBoldJava.deriveFont(Font.PLAIN, 12.f);
 
-        for(int i = 0; i < 5 ; i++) {
-            taskVector.addElement(new Task("This is Task No" + i));
-        }
-
+        taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
         //Since fonts are a kind of a bitch, they'll need extra steps before rendering
         sanFranTxReg = new UnicodeFont(sanFranUITxtRegJava);
         sanFranTxReg.addAsciiGlyphs();
@@ -139,9 +137,9 @@ public class AllTasks extends BasicGameState {
 
         container.setShowFPS(false);
     }
-
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+        taskVector =  TeazyDBMnpln.getTasks(CurrentUser.getUsername());
         renderLeftBar(g, currentView);
         renderAllTasks(g);
         if(isAddingNewTask){
@@ -254,7 +252,9 @@ public class AllTasks extends BasicGameState {
                             hasSelectedDeadline = false;
                             hasSelectedCategory = false;
                             isAddingNewTask = false;
-                            taskVector.addElement(new Task (taskName.getText()));
+                            //TODO what the hell does thi do
+                            taskVector.addElement(new TaskClass((taskName.getText()),category.getText(),deadline.getText()));
+                            TeazyDBMnpln.addTaskDB(CurrentUser.getUsername(),taskName.getText(),category.getText(),deadline.getText());
                             initialize(taskName);
                         } else {
                             //didn't click on any interactable object on newTaskBox

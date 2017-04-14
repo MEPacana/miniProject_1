@@ -2,13 +2,12 @@
  * Created by Marie Curie on 10/04/2017.
  */
 public class CurrentUser{
-    public static String firstname;
-    public static String lastname;
-    public static String username;
-    public static String password;
-    public static String currentschool;
-    public static int taskcount;
-
+    private static String firstname;
+    private static String lastname;
+    private static String username;
+    private static String password;
+    private static String currentschool;
+    private static int taskcount;
 
     public static int getTaskcount() {
         return taskcount;
@@ -17,8 +16,6 @@ public class CurrentUser{
     public static void setTaskcount(int taskcount) {
         CurrentUser.taskcount = taskcount;
     }
-
-
     public static String getFirstname() {
         return firstname;
     }

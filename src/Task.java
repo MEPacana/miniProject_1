@@ -1,3 +1,4 @@
+/*
 public class Task {
     String description, category, deadline;
     int[] deadlineInt = new int[3];
@@ -42,4 +43,4 @@ public class Task {
     public String getDescription () {
         return description;
     }
-}
+}*/

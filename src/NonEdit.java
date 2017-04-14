@@ -8,11 +8,11 @@ import org.newdawn.slick.state.StateBasedGame;
  * Created by Marie Curie on 04/04/2017.
  */
 public class NonEdit extends BasicGameState {
-    public TextField firstname;
-    public TextField lastname;
-    public TextField username;
-    public TextField password;
-    public String mouse = "";
+    private TextField firstname;
+    private TextField lastname;
+    private TextField username;
+    private TextField password;
+    private String mouse = "";
 
     public NonEdit(int nonedit) {
     }

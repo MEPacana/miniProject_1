@@ -12,7 +12,7 @@ public class TodayView extends BasicGameState {
     public boolean addtask = false;
     public TextField taskname, duedate, setcategory;
     public boolean isFirstTimeTaskNameTV = true, isFirstTimeDueDateTV = true, isFirstTimeSetCategoryTV = true;
-
+    public String currentdate = CalendarDemo.currentDate();     //today's date
     public TodayView(int todayview) {
     }
 
@@ -76,8 +76,9 @@ public class TodayView extends BasicGameState {
         if((xpos>0 && xpos<225) && (ypos>364 && ypos<389) ){
             if(input.isMouseButtonDown(0)){
                 initiliaze(taskname,duedate,setcategory);
+                System.out.println("wowzaaaaaaaaaa");
                 isFirstTimeTaskNameTV =  isFirstTimeDueDateTV = isFirstTimeSetCategoryTV = true;
-                game.enterState(3); //go to all tasks
+                game.enterState(4); //go to all tasks
             }
         }
         else if((xpos>0 && xpos<225) && (ypos>294 && ypos<325) ){

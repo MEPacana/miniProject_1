@@ -13,6 +13,7 @@ public class WeekView extends BasicGameState {
     public TextField taskname, duedate, setcategory;
     public boolean addtask = false;
     public boolean isFirstTimeTaskNameWV = true, isFirstTimeDueDateWV = true, isFirstTimeSetCategoryWV = true;
+    public String[] week = CalendarDemo.weeklyCalendar();
 
     TrueTypeFont font;
     public WeekView(int weekview) {
@@ -80,13 +81,15 @@ public class WeekView extends BasicGameState {
 
         Input input = container.getInput();	//keyboard and mouse input
         if((xpos>0 && xpos<225) && (ypos>364 && ypos<389) ){
+            System.out.println("waaaaaaaay");
             if(input.isMouseButtonDown(0)){
+                System.out.println("i am hereeee");
                 initiliaze(taskname,duedate,setcategory);
                 isFirstTimeDueDateWV = isFirstTimeSetCategoryWV = isFirstTimeTaskNameWV = true;
-                game.enterState(3); //go to all tasks
+                game.enterState(4); //go to all tasks
             }
         }
-        else if((xpos>0 && xpos<225) && (ypos>328 && ypos<356) ){
+        if((xpos>0 && xpos<225) && (ypos>328 && ypos<356) ){
             if(input.isMouseButtonDown(0)){
                 initiliaze(taskname,duedate,setcategory);
                 isFirstTimeDueDateWV = isFirstTimeSetCategoryWV = isFirstTimeTaskNameWV = true;
@@ -98,7 +101,7 @@ public class WeekView extends BasicGameState {
                 game.enterState(6); //go to week view
             }
         }*/
-        else if((xpos>0 && xpos<225) && (ypos>234 && ypos<261) ){
+        if((xpos>0 && xpos<225) && (ypos>234 && ypos<261) ){
             if(input.isMouseButtonDown(0)){
                 initiliaze(taskname,duedate,setcategory);
                 isFirstTimeDueDateWV = isFirstTimeSetCategoryWV = isFirstTimeTaskNameWV = true;

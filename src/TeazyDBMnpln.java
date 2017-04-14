@@ -44,11 +44,10 @@ public class TeazyDBMnpln {
                 System.out.println("UserID,Desc,Category,Deadline");
                 String  tempUserID, tempTaskID, tempDescription,tempCategory, tempDeadline;
                 tempUserID = sc.next();
-                tempTaskID = generateTaskID(tempUserID);
                 tempDescription = sc.next();
                 tempCategory = sc.next();
                 tempDeadline = sc.next();
-                addTaskDB(tempUserID,tempTaskID, tempDescription, tempCategory, tempDeadline);
+                addTaskDB(tempUserID, tempDescription, tempCategory, tempDeadline);
             }
             //Check if account exists
             //returns boolean if it already exists
@@ -163,7 +162,9 @@ public class TeazyDBMnpln {
         insertToDB(sMakeInsert); // general insert
     }
 
-    public static void addTaskDB( String userID, String taskID, String description, String category,String deadline){
+    public static void addTaskDB( String userID, String description, String category,String deadline){
+        String taskID;
+        taskID = generateTaskID(userID);
         String sMakeInsert = "INSERT INTO TASK VALUES('" + taskID + "','"+userID+"','" + description +
                 "','" + category + "','" + deadline +"')";
         if(!usernameExists(userID)){
@@ -483,9 +484,12 @@ public class TeazyDBMnpln {
                         rs4.getFetchSize() == rs5.getFetchSize()) {
                     for(int i = 0; rs.next() && rs1.next() && rs2.next() && rs4.next() && rs5.next()  ; i++) {
                         System.out.println("Task with taskheader: " + rs1.getString("taskID") + "exists");
-
                         taskVector.addElement(new TaskClass(rs.getString("userID"),rs1.getString("taskID"),rs2.getString("description"),
                                 rs4.getString("category"),rs5.getString("deadline")));
+                    }
+                    System.out.println("INSIDE FUNCTIONNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+                    for(int i = 0 ;taskVector.size() > i;i++){
+                        System.out.println(taskVector.get(i).getDescription());
                     }
                     return taskVector;
                 }else{
@@ -588,7 +592,7 @@ public class TeazyDBMnpln {
         if (!usernameExists(userID)) {
             System.out.println("Invalid username" + userID);
         }else{
-            String sSelectFName = new String("SELECT lname FROM STUDENT WHERE userID = ?");
+            String sSelectFName = new String("SELECT school FROM STUDENT WHERE userID = ?");
             try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
                 PreparedStatement pstmt = conn.prepareStatement(sSelectFName)){
 
