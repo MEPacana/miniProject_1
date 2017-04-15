@@ -1,3 +1,4 @@
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Calendar;
@@ -28,5 +29,23 @@ public class CalendarDemo {
         String currentdate = sdf.format(new Date());
         System.out.println(currentdate);
         return currentdate;
+    }
+
+    public static boolean isThisDateValid(String dateToValidate){
+        if(dateToValidate == null){
+            return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+        sdf.setLenient(false);
+
+        try {
+            //if not valid, it will throw ParseException
+            Date date = sdf.parse(dateToValidate);
+            System.out.println(date);
+
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
     }
 }

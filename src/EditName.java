@@ -66,7 +66,6 @@ public class EditName extends BasicGameState {
         password.setConsumeEvents(false);
         password.setAcceptingInput(false);
         password.setText("swaggerzxs");
-
     }
 
     @Override

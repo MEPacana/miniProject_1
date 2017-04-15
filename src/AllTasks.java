@@ -63,6 +63,7 @@ public class AllTasks extends BasicGameState {
     String[] views = new String[]{"All Tasks", "Today", "This Week"};
     TextField taskName, deadline, category;
 
+    Sound clickSnd, errorSnd;
     public AllTasks(int alltasks) {
     }
 
@@ -75,6 +76,8 @@ public class AllTasks extends BasicGameState {
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         topYPos = 0;
         //Loading
+        clickSnd = new Sound("res/Sound/click.wav");
+        errorSnd = new Sound ("res/Sound/error.wav");
         try {
             bg = new Image("res/Components/04 home/bg-main.png");
             leftpanel = new Image("res/Components/04 home/leftpanel.png");
@@ -98,7 +101,6 @@ public class AllTasks extends BasicGameState {
         sanFranUITxtRegJava = sanFranUITxtRegJava.deriveFont(Font.PLAIN, 12.f);
         sanFranUITxtBoldJava = sanFranUITxtBoldJava.deriveFont(Font.PLAIN, 12.f);
 
-        taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
         //Since fonts are a kind of a bitch, they'll need extra steps before rendering
         sanFranTxReg = new UnicodeFont(sanFranUITxtRegJava);
         sanFranTxReg.addAsciiGlyphs();
@@ -140,6 +142,7 @@ public class AllTasks extends BasicGameState {
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         taskVector =  TeazyDBMnpln.getTasks(CurrentUser.getUsername());
+        System.out.println(CurrentUser.getUsername());
         renderLeftBar(g, currentView);
         renderAllTasks(g);
         if(isAddingNewTask){
@@ -229,6 +232,7 @@ public class AllTasks extends BasicGameState {
             if(isAddingNewTask) {
                 if((xpos > 471 && xpos < 782) && (ypos > 29 && ypos < 207) ){
                     //if mouse is in newTaskBox area
+                    System.out.println("NISUD SA ADD TASK wtf ??????????????????????????????????????????????????????");
                     if(xpos > 496 && xpos < 766) {
                         //is mouse is in xpos range of the textboxes in taskBox
                         if(ypos > 137 && ypos < 162) {
@@ -248,14 +252,33 @@ public class AllTasks extends BasicGameState {
                             hasSelectedCategory = true;
                         } else if((xpos>730 && xpos<766) && (ypos>46 && ypos<60) ) {
                             //done
+                            System.out.println("NISUD SA ADD TASK???????");
                             hasSelectedNewTask = false;
                             hasSelectedDeadline = false;
                             hasSelectedCategory = false;
                             isAddingNewTask = false;
                             //TODO what the hell does thi do
-                            taskVector.addElement(new TaskClass((taskName.getText()),category.getText(),deadline.getText()));
-                            TeazyDBMnpln.addTaskDB(CurrentUser.getUsername(),taskName.getText(),category.getText(),deadline.getText());
-                            initialize(taskName);
+                            String tempTaskName = taskName.getText();
+                            String tempUserName = CurrentUser.getUsername();
+                            String tempCategory = category.getText();
+                            String tempDeadline = deadline.getText();
+
+                            if(!CalendarDemo.isThisDateValid(tempDeadline)){
+                                if(!errorSnd.playing()){
+                                    errorSnd.play();
+                                }
+                            }else if(tempDeadline.length() > 0&& tempTaskName.length() > 0) {
+                                if(tempCategory.length() == 0)
+                                    tempCategory = "General";
+                                System.out.println("NISUD SA ADD TASK");
+                                taskVector.addElement(new TaskClass(tempTaskName, tempCategory, tempDeadline));
+                                TeazyDBMnpln.addTaskDB(tempUserName, tempTaskName, tempCategory, tempDeadline);
+                                initialize(taskName);
+                            }else{
+                                if(!errorSnd.playing()){
+                                    errorSnd.play();
+                                }
+                            }
                         } else {
                             //didn't click on any interactable object on newTaskBox
                             hasSelectedNewTask = false;

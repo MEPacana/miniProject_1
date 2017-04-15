@@ -74,11 +74,29 @@ public class SignUp extends BasicGameState {
                     }
                     isFirstTimeFirstName = isFirstTimeLastName = isFirstTimeUsername = isFirstTimePassword = isFirstTimeRetypePass = isFirstTimeCurrentSchool = true;
                     //Added this
+                    System.out.println("Current user username: " + username.getText());
+                    System.out.println("Current user password: " + password.getText());
+                    System.out.println("Current user firstname: " + firstname.getText());
+                    System.out.println("Current user lastname: " + lastname.getText());
+                    System.out.println("Current user school: " + currentschool.getText());
+                    System.out.println("Current user taskcount: " + CurrentUser.getTaskcount());
                     TeazyDBMnpln.addStudentDB(username.getText(), password.getText(),
                             firstname.getText(), lastname.getText(), currentschool.getText());
                     //Added this
-                    initialize(firstname,lastname,username,password,retypepass,currentschool);
-                    game.enterState(3); //go to main user
+                    CurrentUser.setUsername(username.getText());
+                    CurrentUser.setPassword(password.getText());
+                    CurrentUser.setFirstname(TeazyDBMnpln.getFName(username.getText()));
+                    CurrentUser.setLastname(TeazyDBMnpln.getLName(username.getText()));
+                    CurrentUser.setCurrentschool(TeazyDBMnpln.getSchool(username.getText()));
+                    CurrentUser.setTaskcount(TeazyDBMnpln.getTaskCount(username.getText()));
+
+                    System.out.println("Current user username: " + CurrentUser.getUsername());
+                    System.out.println("Current user password: " + CurrentUser.getPassword());
+                    System.out.println("Current user firstname: " + CurrentUser.getFirstname());
+                    System.out.println("Current user lastname: " + CurrentUser.getLastname());
+                    System.out.println("Current user school: " + CurrentUser.getCurrentschool());
+                    System.out.println("Current user taskcount: " + CurrentUser.getTaskcount());
+                    game.enterState(4); //go to main user
                 }else{
                     if(!errorSnd.playing()){
                         errorSnd.play();
