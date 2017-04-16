@@ -8,23 +8,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import org.newdawn.slick.*;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.font.effects.ColorEffect;
-import org.newdawn.slick.geom.*;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.gui.TextField;
-import org.newdawn.slick.state.BasicGameState;
-import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.util.ResourceLoader;
-import org.omg.CORBA.Current;
 
-/**
- * Created by Marie Curie on 01/04/2017.
-
-
-public class AllTasks2 extends BasicGameState {
 
     //Logic Shit
     private static final int ALL_TASKS = 0;
