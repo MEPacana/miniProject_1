@@ -1,7 +1,7 @@
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Calendar;
+import java.util.*;
 
 
 /*
@@ -47,5 +47,23 @@ public class CalendarDemo {
             return false;
         }
         return true;
+    }
+
+    public static ArrayList<String> dateSorter(ArrayList<String> datestring) {
+        Collections.sort(datestring, new Comparator<String>() {
+            DateFormat f = new SimpleDateFormat("M/dd/yyyy");
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    return f.parse(o1).compareTo(f.parse(o2));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        });
+        for (String s : datestring) {
+            System.out.println(s);
+        }
+        return datestring;
     }
 }

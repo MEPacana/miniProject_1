@@ -66,6 +66,7 @@ public class SignUp extends BasicGameState {
                 game.enterState(0); //go to landing state
             }
         }
+
         else if((xpos>487 && xpos<509) && (ypos>122 && ypos<135) ){
             if(input.isMouseButtonDown(0)){
                 if(password.getText().equals(retypepass.getText())) {
@@ -170,6 +171,7 @@ public class SignUp extends BasicGameState {
             isFirstTimeCurrentSchool = true;
         }
     }
+
     public static void initialize (TextField firstname, TextField lastname, TextField username, TextField password, TextField retypepass, TextField currentschool){
         firstname.setBorderColor(Color.white);
         firstname.setBackgroundColor(Color.white);

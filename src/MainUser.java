@@ -91,7 +91,6 @@ public class MainUser extends BasicGameState {
         }
         g.drawImage(addnewcategory, 30,320);
         g.drawString(mouse, 50, 100);
-
     }
 
     @Override

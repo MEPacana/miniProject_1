@@ -3,6 +3,7 @@ import jdk.nashorn.internal.ir.visitor.SimpleNodeVisitor;
 
 import java.sql.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -316,7 +317,6 @@ public class TeazyDBMnpln {
 
     public static boolean taskIDExists(String taskID) {
         String sMakeSelect = new String("SELECT taskID FROM TASK WHERE taskID = ?");
-        System.out.println(sMakeSelect);
         try {
             if (dbExists("TeazyDB.db")) {
                 try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
@@ -348,8 +348,7 @@ public class TeazyDBMnpln {
 
     public static boolean categoryExists(String category) {
         String sMakeSelect = new String("SELECT category FROM CATEGORYLIST WHERE category = ?");
-        System.out.println(sMakeSelect);
-        try {
+       try {
             if (dbExists("TeazyDB.db")) {
                 try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
                      PreparedStatement pstmt = conn.prepareStatement(sMakeSelect)) {
@@ -560,6 +559,7 @@ public class TeazyDBMnpln {
                     for(int i = 0 ;taskVector.size() > i;i++){
                         System.out.println(taskVector.get(i).getDescription());
                     }
+                    taskVector = sortTaskVector(taskVector);
                     return taskVector;
                 }else{
                     System.out.println("Something is wrong");
@@ -570,6 +570,37 @@ public class TeazyDBMnpln {
         }
         System.out.println("this should not go here");
         return taskVector;
+    }
+
+    public static Vector<TaskClass> sortTaskVector(Vector<TaskClass> taskVector){
+        for(int i= 0;i< taskVector.size();i++){
+            System.out.println(taskVector.get(i).getDeadline());
+        }
+        if(taskVector.size() == 0 || taskVector.size() == 1 ){
+            return taskVector;
+        }else {
+            ArrayList<String> dateString = new ArrayList<String>();
+            Vector<TaskClass> sortedTaskVector = new Vector<TaskClass>();
+            for(int i = 0; i <taskVector.size() ; i++){
+                dateString.add(taskVector.get(i).getDeadline());
+            }
+            dateString = CalendarDemo.dateSorter(dateString);
+            int j = 0, i;
+            while(taskVector.size() > 0){
+                for(i = 0 ; i < taskVector.size(); i++){
+                    if(dateString.get(j).compareTo(taskVector.get(i).getDeadline()) == 0){
+                        break;
+                    }
+                }
+                sortedTaskVector.addElement(taskVector.get(i));
+                taskVector.remove(i);
+                j++;
+            }
+            for(i = 0;i< taskVector.size();i++){
+                System.out.println(taskVector.get(i).getDeadline());
+            }
+            return sortedTaskVector;
+        }
     }
 
     public static String getFName(String userID){
