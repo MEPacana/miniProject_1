@@ -12,6 +12,9 @@ public class TaskClass {
         category = "<C'est une categori default>";
         deadline = "<Vous pouvez le faire un jour>";
     }
+    public boolean isDone(){
+        return true;
+    }
 
     public TaskClass (String desc) {
         this();

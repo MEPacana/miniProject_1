@@ -1,31 +1,39 @@
+/*
 import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.awt.Color;
+
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.font.effects.ColorEffect;
+import org.newdawn.slick.geom.*;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.ResourceLoader;
+import org.omg.CORBA.Current;
 
 /**
  * Created by Marie Curie on 01/04/2017.
- */
-public class AllTasks extends BasicGameState {
+
+
+public class AllTasks2 extends BasicGameState {
 
     //Logic Shit
     private static final int ALL_TASKS = 0;
     private static final int TODAY_VIEW = 1;
-    private static final int WEEKLY_VIEW = 2;
     private static final int CATEGORY_VIEW = 3;
+    private static final int WEEKLY_VIEW = 2;
     private static final int SELECTOR_HEIGHT = 34;
-    private static final int CATEGORY_S_HEIGHT = 28;
     private static final int LEFTPANEL_WIDTH = 225;
+    private static final int CATEGORY_S_HEIGHT = 28;
 
     private boolean isAddingNewTask = false;
     private boolean hasSelectedNewTask = false;
@@ -36,12 +44,14 @@ public class AllTasks extends BasicGameState {
     private boolean isAddingNewCategory = false;
     private boolean hasSelectedCategoryName = false;
     private boolean isCatAlreadyExists = false;
+
     public String mouse = "";
     private int currentView = ALL_TASKS, currentCategory = 0;
     private int topYPos ,topYPos2;
     private int newCatBoxYPos;
 
-
+    private boolean updateTaskVector;
+    Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
     //UI Shit
     Font sanFranUITxtRegJava = null;
     Font sanFranUITxtBoldJava = null;
@@ -61,6 +71,7 @@ public class AllTasks extends BasicGameState {
     UnicodeFont sanFranTxLtRed = null;
     UnicodeFont sanFranUITxBoldBlue16 = null;
     UnicodeFont SanFranTxLtBlue14 = null;
+
     Image bg = null;
     Image leftpanel = null;
     Image leftpanel2 = null;
@@ -82,11 +93,11 @@ public class AllTasks extends BasicGameState {
     Image boxDone = null;
     Image profileSettingsDots = null;
     Image profileSettingsBox = null;
-    boolean updateTaskVector,updateCategoryVector;
-    Sound clickSnd, errorSnd;
 
-    Vector<TaskClass> taskVector = new Vector();
     Vector<String> categories = new Vector();
+    Vector<Image> taskBoxVector = new Vector();
+    Vector<TaskClass> taskVector = new Vector();
+
     String[] views = new String[]{"All Tasks", "Today", "This Week"};
     private static String[] monthNames = {"January","February","March","April","May","June","July","August","September","October","November","December"};
     private static String[] weekdayNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -94,7 +105,11 @@ public class AllTasks extends BasicGameState {
 
     private String name = null;
 
-    public AllTasks(int alltasks) {
+    Font font = new Font("Verdana", Font.PLAIN, 26);
+    TrueTypeFont ttf = new TrueTypeFont(font, true);
+
+    Sound clickSnd, errorSnd;
+    public AllTasks2(int alltasks) {
     }
 
     @Override
@@ -104,13 +119,13 @@ public class AllTasks extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
-        updateCategoryVector = updateTaskVector = true;
         name = "John Doe";
-        topYPos = 0;
-        topYPos2 = 0;
+
+        topYPos = topYPos2 = 0;
+        //Loading
+        updateTaskVector = true;
         clickSnd = new Sound("res/Sound/click.wav");
         errorSnd = new Sound ("res/Sound/error.wav");
-        //Loading
         try {
             bg = new Image("res/Components/04 home/bg-main.png");
             leftpanel = new Image("res/Components/04 home/leftpanel.png");
@@ -119,15 +134,16 @@ public class AllTasks extends BasicGameState {
             icontoday = new Image("res/Components/04 home/icontoday.png");
             iconthisweek = new Image("res/Components/04 home/iconthisweek.png");
             iconcategory = new Image("res/Components/04 home/iconcategory.png");
-            selectorview = new Image("res/Components/04 home/selectorview.png");
+
             selectorcategory = new Image("res/Components/04 home/selectorcategory.png");
             empty = new Image("res/Components/04 home/empty.png");
+            selectorview = new Image("res/Components/04 home/selectorview.png");
+
             addnewcategory = new Image("res/Components/04 home/addnewcategory.png");
             newCategoryErr = new Image("res/Components/04 home/newcategorybox2err.png");
-            newCategoryBox = new Image("res/Components/04 home/newcategorybox2.png");
+
             fab = new Image("res/Components/04 home/fab.png");
             newTaskWindow = new Image("res/Components/04 home/newtaskwindow.png");
-            newTaskWindowError = new Image("res/Components/04 home/newtaskwindowerrordate.png");
             taskBox = new Image("res/Components/04 home/taskbox.png");
             boxNotDone = new Image("res/Components/04 home/boxnotdone.png");
             boxDone = new Image("res/Components/04 home/boxdone.png");
@@ -140,10 +156,11 @@ public class AllTasks extends BasicGameState {
             sanFranUIDispThJava = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream("res/Fonts/SFUIDisplay-Light.ttf"));
             sanFranUITxBoldBlueJava = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream("res/Fonts/SFUIText-Bold.ttf"));
 
+            sanFranUITxtRegJava = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream("res/Fonts/SFUIText-Regular.ttf"));
+            sanFranUITxtBoldJava = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream("res/Fonts/SFUIText-Bold.ttf"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         sanFranUITxtRegJava = sanFranUITxtRegJava.deriveFont(Font.PLAIN, 12.f);
         sanFranUITxtBoldJava = sanFranUITxtBoldJava.deriveFont(Font.PLAIN, 12.f);
         sanFranUITxtLtJava = sanFranUITxtLtJava.deriveFont(Font.PLAIN, 10.f);
@@ -151,6 +168,17 @@ public class AllTasks extends BasicGameState {
         sanFranUIDispThJava = sanFranUIDispThJava.deriveFont(Font.PLAIN, 24.f);
         sanFranUITxBoldBlueJava = sanFranUITxtBoldJava.deriveFont(Font.PLAIN, 11.f);
         sanFranUITxBoldBlue16Java = sanFranUITxtBoldJava.deriveFont(Font.PLAIN, 16.f);
+
+        //for testing purposes only
+        for(int i = 0; i < 30 ; i++) {
+            try {
+                taskVector.addElement(new TaskClass("This is Task No" + i*i*i*i,  "Home","12/24/2017"));
+                //TODO do something about this
+                categories.addElement(" Category " + i);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         //Since fonts are a kind of a bitch, they'll need extra steps before rendering
         sanFranTxReg = new UnicodeFont(sanFranUITxtRegJava);
@@ -162,6 +190,23 @@ public class AllTasks extends BasicGameState {
             e.printStackTrace();
         }
 
+        sanFranTxBold = new UnicodeFont(sanFranUITxtBoldJava);
+        sanFranTxBold.addAsciiGlyphs();
+        sanFranTxBold.getEffects().add(new ColorEffect(Color.black));
+        try {
+            sanFranTxBold.loadGlyphs();
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
+
+        sanFranTxRegGrey = new UnicodeFont(sanFranUITxtRegJava);
+        sanFranTxRegGrey.addAsciiGlyphs();
+        sanFranTxRegGrey.getEffects().add(new ColorEffect(Color.gray));
+        try {
+            sanFranTxRegGrey.loadGlyphs();
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
         sanFranTxBold = new UnicodeFont(sanFranUITxtBoldJava);
         sanFranTxBold.addAsciiGlyphs();
         sanFranTxBold.getEffects().add(new ColorEffect(Color.black));
@@ -255,26 +300,21 @@ public class AllTasks extends BasicGameState {
         taskName = new TextField(container, sanFranTxReg, 502, 540-161, 224, 20);
         deadline = new TextField(container, sanFranTxReg, 502, 540-125, 224, 20);
         category = new TextField(container, sanFranTxReg, 502, 540-89, 244, 20);
+        //TODO wtf
         newCategoryName = new TextField(container, sanFranTxReg, 502, 540 - 9, 244, 20);
-
         initialize(taskName);
         initialize(deadline);
         initialize(category);
-        initialize(newCategoryName);
+
         container.setShowFPS(false);
     }
-
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        renderLeftBar(g, currentView);
         if(updateTaskVector) {
             updateTaskVector = false;
             taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
         }
-        if(updateCategoryVector){
-            updateCategoryVector = false;
-            categories = TeazyDBMnpln.getCategories(CurrentUser.getUsername());
-        }
+
         if(isProfileSettingsSelected){
             renderProfileSettings(g);
         }
@@ -301,6 +341,8 @@ public class AllTasks extends BasicGameState {
                 renderWeeklyView(g);
                 break;
         }
+        renderLeftBar(g, currentView);
+        renderAllTasks(g);
         if(isAddingNewTask){
             if(isWrongDateFormat){
                 renderWrongDate(g);
@@ -314,13 +356,14 @@ public class AllTasks extends BasicGameState {
 
     private void renderProfileSettings(Graphics g) {
         g.drawImage(profileSettingsBox, selectorview.getWidth() - profileSettingsBox.getWidth(), 73);
-        SanFranTxLtBk14.drawString(75, 90,CurrentUser.getFirstname()+ " "+CurrentUser.getLastname());
+        SanFranTxLtBk14.drawString(75, 90, name);
     }
 
     private void renderLeftBar(Graphics g, int currentView) {
         //Rendering
         g.drawImage(bg,0,0);
         g.drawImage(leftpanel, 0,0);
+
         if(currentView == CATEGORY_VIEW){
             g.drawImage(selectorview, 0, 145 + selectorview.getHeight() * (currentView + 1 + currentCategory) + topYPos2);
         }
@@ -334,6 +377,7 @@ public class AllTasks extends BasicGameState {
                 sanFranTxReg.drawString(25 + iconcategory.getWidth() + 20, topYPos2 + 290 + SELECTOR_HEIGHT * i, categories.elementAt(i));
             }
         }
+
         g.drawImage(addnewcategory, 30, topYPos2 + 280 + SELECTOR_HEIGHT*i + (34 - addnewcategory.getHeight())/2);
         g.drawImage(leftpanel2, 0, SELECTOR_HEIGHT/2);
         g.drawImage(leftpanel2, 0, 0);
@@ -341,16 +385,36 @@ public class AllTasks extends BasicGameState {
         if(currentView != CATEGORY_VIEW) {
             g.drawImage(selectorview, 0, 145 + selectorview.getHeight() * currentView);
         }
+
+        g.drawImage(selectorview,0, 145 + selectorview.getHeight()*currentView);
         g.drawImage(iconalltasks,25, 155);
         g.drawImage(icontoday,25, 145+34+(34-24)/2);
         g.drawImage(iconthisweek,25,145+34*2+(34-24)/2);
+*/
+/*        g.drawImage(iconcategory,25,280);
+        g.drawImage(addnewcategory, 30,320);
+
+
+TODO why??        if(taskVector.isEmpty()){
+            g.drawImage(empty, 320, 110);
+        }
+
+        for (int i = 0; i < 3; i++) {
+            if(i == currentView) {
+                sanFranTxBold.drawString(75, 155 + selectorview.getHeight()*i, views[i]);
+            } else {
+                sanFranTxReg.drawString(75, 155 + selectorview.getHeight()*i, views[i]);
+            }
+        }*//*
+
+
+        //g.drawString(mouse, 50, 100);
         g.drawImage(profileSettingsDots, 207, 510-422+profileSettingsDots.getHeight() );
         g.drawString(mouse, 0, 0);
 
         //TODO incorporate user's full name
-        SanFranTxLtWt14.drawString(65, 90, CurrentUser.getFirstname()+ " "+CurrentUser.getLastname());
-        sanFranUIDispTh.drawString(16, 86, Character.toString(CurrentUser.getFirstname().charAt(0)) +
-                Character.toString(CurrentUser.getLastname().charAt(0)));
+        SanFranTxLtWt14.drawString(75, 90, name);
+        sanFranUIDispTh.drawString(24, 86, "JD");
 
         for (int j = 0; j < 3; j++) {
             if(j == currentView) {
@@ -359,6 +423,16 @@ public class AllTasks extends BasicGameState {
                 sanFranTxReg.drawString(75, 155 + selectorview.getHeight()*j, views[j]);
             }
         }
+//TODO why??/
+        */
+/*ttf.drawString(15, 84,Character.toString(CurrentUser.getFirstname().charAt(0)) +
+        *//*
+
+        Character.toString(CurrentUser.getLastname().charAt(0));
+    }
+
+    private void renderWrongDate (Graphics g) {
+        g.drawImage(newTaskWindowError, 460, 325);
     }
 
     private void renderNewTask(GameContainer container, Graphics g) {
@@ -380,10 +454,6 @@ public class AllTasks extends BasicGameState {
         category.render(container, g);
     }
 
-    private void renderWrongDate (Graphics g) {
-        g.drawImage(newTaskWindowError, 460, 325);
-    }
-
     private void renderAllTasks(Graphics g) {
         if(taskVector.isEmpty()){
             g.drawImage(empty, 320, 110);
@@ -392,20 +462,20 @@ public class AllTasks extends BasicGameState {
             for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
                 sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
-                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()),
-                        topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-            /* TODO late
+                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).toStringDeadline());
+            */
+/* TODO late
              * if (taskVector.elementAt(i).isLate()) {
              *      sanFranTxLtRed.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * } else {
              *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * }
-             */
+             *//*
+
                 g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
             }
         }
     }
-
     private void renderTodayView(Graphics g) {
         if(taskVector.isEmpty()){
             g.drawImage(empty, 320, 110);
@@ -413,17 +483,17 @@ public class AllTasks extends BasicGameState {
             sanFranUITxBoldBlue16.drawString(90 * 3 + 3, topYPos + 10 + 11 + (40 + 10) * 0, "TODAY'S TASKS");
             for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
-                sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j,
-                        taskVector.elementAt(i).getDescription());
-                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()),
-                        topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-            /* TODO late
+                sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
+                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).toStringDeadline());
+            */
+/* TODO late
              * if (taskVector.elementAt(i).isLate()) {
              *      sanFranTxLtRed.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * } else {
              *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * }
-             */
+             *//*
+
                 if (taskVector.elementAt(i).isDone()) {
                     g.drawImage(boxDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
                 } else {
@@ -437,16 +507,18 @@ public class AllTasks extends BasicGameState {
         if(taskVector.isEmpty()){
             g.drawImage(empty, 320, 110);
         } else {
-        /*for(int i = 0; i < 7 ; i++) {
+        */
+/*for(int i = 0; i < 7 ; i++) {
             sanFranUITxBoldBlue16.drawString(90*3 + 3, topYPos + 10 + 11 + (40 + 10) * 0, weekdayNames[(currentDay + i) %7]);
             SanFranTxLtBlue14.drawString(90*3 +3 + sanFranUITxBoldBlue16.getWidth("Monday"), topYPos + 10 + 11 + (40 + 10) * 0, "  " + taskday + taskMonth);
-        }*/
+        }*//*
+
             sanFranUITxBoldBlue16.drawString(90 * 3 + 3, topYPos + 10 + 11 + (40 + 10) * 0, "Monday");
             SanFranTxLtBlue14.drawString(90 * 3 + 3 + sanFranUITxBoldBlue16.getWidth("Monday"), topYPos + 10 + 11 + (40 + 10) * 0, "  13 Maytember");
             for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
                 sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
-                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
+                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).toStringDeadline());
                 if (taskVector.elementAt(i).isDone()) {
                     g.drawImage(boxDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
                 } else {
@@ -455,7 +527,6 @@ public class AllTasks extends BasicGameState {
             }
         }
     }
-
     private void renderCategoryView(Graphics g, int index) {
         if(taskVector.isEmpty()){
             g.drawImage(empty, 320, 110);
@@ -464,14 +535,16 @@ public class AllTasks extends BasicGameState {
             for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
                 sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
-                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-            /* TODO late
+                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).toStringDeadline());
+            */
+/* TODO late
              * if (taskVector.elementAt(i).isLate()) {
              *      sanFranTxLtRed.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * } else {
              *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * }
-             */
+             *//*
+
                 if (taskVector.elementAt(i).isDone()) {
                     g.drawImage(boxDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
                 } else {
@@ -506,10 +579,14 @@ public class AllTasks extends BasicGameState {
         int ypos = Mouse.getY();
         mouse = "x pos = "+xpos+"   y pos = "+ypos;
 
-        Input input = container.getInput(); //keyboard and mouse input
+        Input input = container.getInput();	//keyboard and mouse input
 
         if(hasSelectedNewTask){
             taskName.setFocus(true);
+        }
+
+        if(hasSelectedCategoryName) {
+            newCategoryName.setFocus(true);
         }
 
         if(hasSelectedDeadline){
@@ -520,21 +597,15 @@ public class AllTasks extends BasicGameState {
             category.setFocus(true);
         }
 
-        if(hasSelectedCategoryName) {
-            newCategoryName.setFocus(true);
-        }
-
         if(input.isMousePressed(0)) {
-            //if mouse was clicked
-            if (isAddingNewTask) {
-                //if user is adding new task
-                if ((xpos > 471 && xpos < 782) && (ypos > 29 && ypos < 207)) {
+            if(isAddingNewTask) {
+                if((xpos > 471 && xpos < 782) && (ypos > 29 && ypos < 207) ) {
                     //if mouse is in newTaskBox area
                     if (xpos > 496 && xpos < 766) {
+                        //is mouse is in xpos range of the textboxes in taskBox
                         if (isWrongDateFormat) {
                             isWrongDateFormat = false;
                         } else {
-                            //is mouse is in xpos range of the textboxes in taskBox
                             if (ypos > 137 && ypos < 162) {
                                 //has selected new task
                                 hasSelectedNewTask = true;
@@ -556,43 +627,29 @@ public class AllTasks extends BasicGameState {
                                 hasSelectedDeadline = false;
                                 hasSelectedCategory = false;
                                 isAddingNewTask = false;
-
-/*                                try {
-                                    taskVector.addElement(new TaskClass(taskName.getText(),  category.getText(), deadline.getText()));
-                                } catch (Exception e) {
-                                    System.out.println("YO");
-                                    isWrongDateFormat = true;
-                                    isAddingNewTask = true;
-                                }*/
+                                //TODO what the hell does thi do
                                 String tempTaskName = taskName.getText();
                                 String tempUserName = CurrentUser.getUsername();
                                 String tempCategory = category.getText();
                                 String tempDeadline = deadline.getText();
-                                if(tempCategory.length() == 0)
-                                    tempCategory = "General";
 
-                                if(!CalendarDemo.isThisDateValid(tempDeadline)){
-                                    if(!errorSnd.playing()){
+                                if (!CalendarDemo.isThisDateValid(tempDeadline)) {
+                                    if (!errorSnd.playing()) {
                                         errorSnd.play();
                                     }
-                                    isWrongDateFormat = true;
-                                }else if(!TeazyDBMnpln.categoryExists(tempCategory)){
-                                    if(!errorSnd.playing()){
+                                } else if (!TeazyDBMnpln.categoryExists(tempCategory)) {
+                                    if (!errorSnd.playing()) {
                                         errorSnd.play();
                                     }
-                                }
-                                else if(tempDeadline.length() > 0&& tempTaskName.length() > 0) {
-                                    if(tempCategory.length() == 0)
+                                } else if (tempDeadline.length() > 0 && tempTaskName.length() > 0) {
+                                    if (tempCategory.length() == 0)
                                         tempCategory = "General";
                                     taskVector.addElement(new TaskClass(tempTaskName, tempCategory, tempDeadline));
                                     TeazyDBMnpln.addTaskDB(tempUserName, tempTaskName, tempCategory, tempDeadline);
                                     updateTaskVector = true;
-                                    if(!clickSnd.playing()){
-                                        clickSnd.play();
-                                    }
                                     initialize(taskName);
-                                }else{
-                                    if(!errorSnd.playing()){
+                                } else {
+                                    if (!errorSnd.playing()) {
                                         errorSnd.play();
                                     }
                                 }
@@ -620,7 +677,7 @@ public class AllTasks extends BasicGameState {
                 } else {
                     isProfileSettingsSelected = false;
                 }
-            } else if (isAddingNewCategory){
+            }  else if (isAddingNewCategory){
                 if(!isCatAlreadyExists){
                     if(!(xpos >= 21 && xpos <= 21+newCategoryBox.getWidth() && ypos <= 540 - newCatBoxYPos && ypos >= 540 - (newCatBoxYPos + newCategoryBox.getHeight()))) {
                         isAddingNewCategory = false;
@@ -644,13 +701,7 @@ public class AllTasks extends BasicGameState {
                 } else {
                     isCatAlreadyExists = false;
                 }
-            } else {
-                if(xpos >= 200 && xpos<= 215 && ypos >= 425 && ypos <= 447){
-                    if(!clickSnd.playing()){
-                        clickSnd.play();
-                    }
-                    isProfileSettingsSelected = true;
-                }
+            }  else {
                 if (xpos >= 0 && xpos <= LEFTPANEL_WIDTH) {
                     if (ypos <= (540 - 145) - SELECTOR_HEIGHT * ALL_TASKS && ypos >= (540 - 145) - SELECTOR_HEIGHT * (ALL_TASKS + 1)) {
                         currentView = ALL_TASKS;
@@ -666,7 +717,6 @@ public class AllTasks extends BasicGameState {
                         currentView = WEEKLY_VIEW;
                         topYPos = 0;
                     }
-
                     if(ypos <= 540 - 145 - SELECTOR_HEIGHT * 4) {
                         int i = 0;
                         for (; i < categories.size(); i++) {
@@ -681,20 +731,13 @@ public class AllTasks extends BasicGameState {
                             currentView = CATEGORY_VIEW;
                             isAddingNewCategory = true;
                             newCatBoxYPos = (145 + SELECTOR_HEIGHT * 4) + topYPos2 + SELECTOR_HEIGHT * (i);
-                            if(!clickSnd.playing()){
-                                clickSnd.play();
-                            }
                         }
                     }
                 }
 
                 if((xpos>735 && xpos<781) && (ypos>28 && ypos<77) ) {//forFAB
                     isAddingNewTask = true; //mugawas ang new task window
-                    if(!clickSnd.playing()){
-                        clickSnd.play();
-                    }
                 }
-
                 for(int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                     if((xpos >= 90*3+12 && xpos <= 90*3+12+boxNotDone.getWidth() && ypos <= 540 - (topYPos + 10 + 11 + (40 + 10) * j) && ypos >= 540 - (topYPos + 10 + 11 + (40 + 10) * j) - boxNotDone.getHeight())){
                         taskVector.remove(i);
@@ -702,6 +745,12 @@ public class AllTasks extends BasicGameState {
                 }
             }
         }
+        //if (bottomYPos > 510)
+        //TODO why
+        */
+/*if(!isAddingNewTask) {
+            topYPos = topYPos + Mouse.getDWheel()/8;
+        }*//*
 
         int temp;
         if(!isAddingNewTask && !isProfileSettingsSelected && !isAddingNewCategory) {
@@ -716,6 +765,7 @@ public class AllTasks extends BasicGameState {
         }
     }
 
+
     private static void initialize (TextField taskname){
         taskname.setBorderColor(org.newdawn.slick.Color.transparent);
         taskname.setBackgroundColor(org.newdawn.slick.Color.transparent);
@@ -727,3 +777,5 @@ public class AllTasks extends BasicGameState {
         taskname.setText("");
     }
 }
+
+*/

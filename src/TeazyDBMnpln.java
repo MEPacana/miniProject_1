@@ -25,7 +25,7 @@ public class TeazyDBMnpln {
             System.out.println("Please choose the following: \n1. Add Student\n2. Add Task" +
                     "\n3. Check Account \n4. Delete Student\n5. Delete Task\n6. Get Tasks\n7. Edit Name\n" +
                     "8. Edit Username\n9. Edit Password\n10. Get First Name\n11. Get Last Name\n12. Get School" +
-                    "\n13. Get TaskCount\n14. Create Category\n15. Check Category");
+                    "\n13. Get TaskCount\n14. Create Category\n15. Check Category\n16. Get Category");
             choice = sc.nextInt();
 
             //Adding a student
@@ -168,6 +168,21 @@ public class TeazyDBMnpln {
                 if(categoryExists(tempCategory)){
                     System.out.println("Category Exists");
                 }else{
+                    System.out.println("Category Doesn't Exist");
+                }
+            }
+            else if(choice == 16){
+                String tempUserID;
+                System.out.println("UserID");
+                tempUserID = sc.next();
+                if(usernameExists(tempUserID)){
+                    Vector<String> categories;
+                    categories = getCategories(tempUserID);
+                    for(int i = 0 ;i < categories.size(); i++){
+                        System.out.println(categories.get(i));
+                    }
+
+                 }else{
                     System.out.println("Category Doesn't Exist");
                 }
             }
@@ -520,56 +535,29 @@ public class TeazyDBMnpln {
         }
     }
 /////////////////////////////////////////////// G E T T E R S//////////////////////////////////////////////////////////////////////////////////
-    public static Vector<TaskClass> getTasks(String userID){
-        Vector<TaskClass> taskVector = new Vector<TaskClass>();
+
+    public static Vector<String> getCategories(String userID){
+        Vector<String> categories = new Vector<String>();
         if (!usernameExists(userID)) {
             System.out.println("Invalid username" + userID);
         }else{
-            String sSelectTaskID = new String("SELECT taskID FROM TASK WHERE userID = ?");
-            String sSelectUserID = new String("SELECT userID FROM TASK WHERE userID = ?");
-            String sSelectdescription = new String("SELECT description FROM TASK WHERE userID = ?");
-            String sSelectcategory = new String("SELECT category FROM TASK WHERE userID = ?");
-            String sSelectdeadline = new String("SELECT deadline FROM TASK WHERE userID = ?");
+            String sSelectCategories = new String("SELECT CATEGORY FROM CATEGORYLIST WHERE userID = ?");
             try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
-                PreparedStatement pstmt = conn.prepareStatement(sSelectUserID);
-                PreparedStatement pstmt1 = conn.prepareStatement(sSelectTaskID);
-                PreparedStatement pstmt2 = conn.prepareStatement(sSelectdescription);
-                PreparedStatement pstmt4 = conn.prepareStatement(sSelectcategory);
-                PreparedStatement pstmt5 = conn.prepareStatement(sSelectdeadline)){
+                PreparedStatement pstmt = conn.prepareStatement(sSelectCategories)){
 
                 pstmt.setString(1,userID);
-                pstmt1.setString(1,userID);
-                pstmt2.setString(1,userID);
-                pstmt4.setString(1,userID);
-                pstmt5.setString(1,userID);
                 ResultSet rs = pstmt.executeQuery();
-                ResultSet rs1 = pstmt1.executeQuery();
-                ResultSet rs2 = pstmt2.executeQuery();
-                ResultSet rs4 = pstmt4.executeQuery();
-                ResultSet rs5 = pstmt5.executeQuery();
 
-                if(rs.getFetchSize() == rs1.getFetchSize() && rs1.getFetchSize() == rs2.getFetchSize() &&
-                        rs2.getFetchSize() == rs4.getFetchSize() &&
-                        rs4.getFetchSize() == rs5.getFetchSize()) {
-                    for(int i = 0; rs.next() && rs1.next() && rs2.next() && rs4.next() && rs5.next()  ; i++) {
-                        System.out.println("Task with taskheader: " + rs1.getString("taskID") + "exists");
-                        taskVector.addElement(new TaskClass(rs.getString("userID"),rs1.getString("taskID"),rs2.getString("description"),
-                                rs4.getString("category"),rs5.getString("deadline")));
-                    }
-                    for(int i = 0 ;taskVector.size() > i;i++){
-                        System.out.println(taskVector.get(i).getDescription());
-                    }
-                    taskVector = sortTaskVector(taskVector);
-                    return taskVector;
-                }else{
-                    System.out.println("Something is wrong");
+                while(rs.next()){
+                    categories.add(rs.getString("CATEGORY"));
                 }
+                return categories;
             }catch(SQLException e){
                 e.printStackTrace();
             }
         }
         System.out.println("this should not go here");
-        return taskVector;
+        return categories;
     }
 
     public static Vector<TaskClass> sortTaskVector(Vector<TaskClass> taskVector){
