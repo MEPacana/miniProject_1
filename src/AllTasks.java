@@ -424,11 +424,7 @@ public class AllTasks extends BasicGameState {
              *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * }
              */
-                if (taskVector.elementAt(i).isDone()) {
-                    g.drawImage(boxDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
-                } else {
                     g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
-                }
             }
         }
     }
@@ -447,11 +443,7 @@ public class AllTasks extends BasicGameState {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
                 sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
                 sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-                if (taskVector.elementAt(i).isDone()) {
-                    g.drawImage(boxDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
-                } else {
-                    g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
-                }
+                g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
             }
         }
     }
@@ -472,11 +464,7 @@ public class AllTasks extends BasicGameState {
              *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * }
              */
-                if (taskVector.elementAt(i).isDone()) {
-                    g.drawImage(boxDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
-                } else {
                     g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
-                }
             }
         }
     }
