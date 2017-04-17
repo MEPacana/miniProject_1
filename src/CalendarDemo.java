@@ -24,6 +24,7 @@ public class CalendarDemo {
         }
         return week;
     }
+
     public static String currentDate(){
         SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
         String currentdate = sdf.format(new Date());
