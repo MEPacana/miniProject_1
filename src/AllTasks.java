@@ -681,6 +681,9 @@ public class AllTasks extends BasicGameState {
                     if(!clickSnd.playing()){
                         clickSnd.play();
                     }
+                    if(!clickSnd.playing()){
+                        clickSnd.play();
+                    }
                 }
 
                 for(int i = 0, j = 1; i < taskVector.size(); i++, j++) {
