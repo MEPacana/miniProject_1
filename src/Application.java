@@ -22,7 +22,6 @@ public class Application extends StateBasedGame{
     public static final int editusername = 10;
     public static final int editpassword = 11;
 
-
     public Application(String appName){
         super(appName);
     }

@@ -586,6 +586,71 @@ public class TeazyDBMnpln {
         System.out.println("this should not go here");
         return taskVector;
     }
+    public static Vector<TaskClass> getTasks(String userID, String column,boolean columntype ){
+        Vector<TaskClass> taskVector = new Vector<TaskClass>();
+        if (!usernameExists(userID)) {
+            System.out.println("Invalid username" + userID);
+        }else{
+            String stringColumn;
+            if(columntype){
+                stringColumn = "deadline";
+            }else{
+                stringColumn = "category";
+            }
+            String sSelectTaskID = new String("SELECT taskID FROM TASK WHERE userID = ? AND " + stringColumn + " = ?");
+            String sSelectUserID = new String("SELECT userID FROM TASK WHERE userID = ? AND " + stringColumn + " = ?");
+            String sSelectdescription = new String("SELECT description FROM TASK WHERE userID = ? AND " + stringColumn + " = ?");
+            String sSelectcategory = new String("SELECT category FROM TASK WHERE userID = ? AND " + stringColumn + " = ?");
+            String sSelectdeadline = new String("SELECT deadline FROM TASK WHERE userID = ? AND " + stringColumn + " = ?");
+            try(Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
+                PreparedStatement pstmt = conn.prepareStatement(sSelectUserID);
+                PreparedStatement pstmt1 = conn.prepareStatement(sSelectTaskID);
+                PreparedStatement pstmt2 = conn.prepareStatement(sSelectdescription);
+                PreparedStatement pstmt3 = conn.prepareStatement(sSelectcategory);
+                PreparedStatement pstmt4 = conn.prepareStatement(sSelectdeadline)){
+
+                pstmt.setString(1,userID);
+                pstmt1.setString(1,userID);
+                pstmt2.setString(1,userID);
+                pstmt3.setString(1,userID);
+                pstmt4.setString(1,userID);
+
+                pstmt.setString(2,column);
+                pstmt1.setString(2,column);
+                pstmt2.setString(2,column);
+                pstmt3.setString(2,column);
+                pstmt4.setString(2,column);
+
+                ResultSet rs = pstmt.executeQuery();
+                ResultSet rs1 = pstmt1.executeQuery();
+                ResultSet rs2 = pstmt2.executeQuery();
+                ResultSet rs3 = pstmt3.executeQuery();
+                ResultSet rs4 = pstmt4.executeQuery();
+
+                if(rs.getFetchSize() == rs1.getFetchSize() && rs1.getFetchSize() == rs2.getFetchSize() &&
+                        rs2.getFetchSize() == rs3.getFetchSize() &&
+                        rs3.getFetchSize() == rs4.getFetchSize()) {
+                    for(int i = 0; rs.next() && rs1.next() && rs2.next() && rs3.next() && rs4.next()  ; i++) {
+                        System.out.println("Task with taskheader: " + rs1.getString("taskID") + "exists");
+                        taskVector.addElement(new TaskClass(rs.getString("userID"),rs1.getString("taskID"),rs2.getString("description"),
+                                rs3.getString("category"),rs4.getString("deadline")));
+                    }
+                    for(int i = 0 ;taskVector.size() > i;i++){
+                        System.out.println(taskVector.get(i).getDescription());
+                    }
+                    taskVector = sortTaskVector(taskVector);
+                    return taskVector;
+                }else{
+                    System.out.println("Something is wrong");
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("this should not go here");
+        return taskVector;
+    }
+
     public static Vector<String> getCategories(String userID){
         Vector<String> categories = new Vector<String>();
         if (!usernameExists(userID)) {

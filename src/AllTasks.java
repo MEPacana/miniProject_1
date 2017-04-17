@@ -82,7 +82,8 @@ public class AllTasks extends BasicGameState {
     Image boxDone = null;
     Image profileSettingsDots = null;
     Image profileSettingsBox = null;
-    boolean updateTaskVector,updateCategoryVector;
+    int updateTaskVector;
+    boolean updateCategoryVector;
     Sound clickSnd, errorSnd;
 
     Vector<TaskClass> taskVector = new Vector();
@@ -104,7 +105,8 @@ public class AllTasks extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
-        updateCategoryVector = updateTaskVector = true;
+        updateCategoryVector = true;
+        updateTaskVector = 1;
         name = "John Doe";
         topYPos = 0;
         topYPos2 = 0;
@@ -267,9 +269,21 @@ public class AllTasks extends BasicGameState {
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         renderLeftBar(g, currentView);
-        if(updateTaskVector) {
-            updateTaskVector = false;
-            taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
+        if(updateTaskVector!= 0) {
+            if(updateTaskVector == 1) {
+                taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
+            }else if(updateTaskVector ==2){
+                //true if 3 input getTask and date
+                taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername(),CalendarDemo.currentDate(),true);
+            }else if(updateTaskVector == 3){
+
+            }else if(updateTaskVector == 4){
+
+                //false if 3 input getTask and category
+                taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername(),categories.get(currentCategory),false);
+            }
+            updateTaskVector = 0;
+
         }
         if(updateCategoryVector){
             updateCategoryVector = false;
@@ -419,7 +433,8 @@ public class AllTasks extends BasicGameState {
                         topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
             /* TODO late
              * if (taskVector.elementAt(i).isLate()) {
-             *      sanFranTxLtRed.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
+             *      sanFranTxLtRed.d
+             *      rawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * } else {
              *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
              * }
@@ -574,7 +589,7 @@ public class AllTasks extends BasicGameState {
                                         tempCategory = "General";
                                     taskVector.addElement(new TaskClass(tempTaskName, tempCategory, tempDeadline));
                                     TeazyDBMnpln.addTaskDB(tempUserName, tempTaskName, tempCategory, tempDeadline);
-                                    updateTaskVector = true;
+
                                     if(!clickSnd.playing()){
                                         clickSnd.play();
                                     }
@@ -623,6 +638,14 @@ public class AllTasks extends BasicGameState {
                             else {
                                 isAddingNewCategory = false;
                                 categories.addElement(newCategoryName.getText());
+                                TeazyDBMnpln.addCategoryDB(CurrentUser.getUsername(),newCategoryName.getText());
+                                if(currentView == ALL_TASKS){
+                                    updateTaskVector = 0;
+                                }else if(currentView == TODAY_VIEW){
+                                    updateTaskVector = 1;
+                                }else if(currentView == TODAY_VIEW){
+                                    updateTaskVector = 2;
+                                }
                             }
                             initialize(newCategoryName);
                         } else {
@@ -641,17 +664,21 @@ public class AllTasks extends BasicGameState {
                 }
                 if (xpos >= 0 && xpos <= LEFTPANEL_WIDTH) {
                     if (ypos <= (540 - 145) - SELECTOR_HEIGHT * ALL_TASKS && ypos >= (540 - 145) - SELECTOR_HEIGHT * (ALL_TASKS + 1)) {
+                        //All
+                        updateTaskVector = 1;
                         currentView = ALL_TASKS;
                         topYPos = 0;
                     }
 
                     if (ypos <= (540 - 145) - SELECTOR_HEIGHT * TODAY_VIEW && ypos >= (540 - 145) - SELECTOR_HEIGHT * (TODAY_VIEW + 1)) {
                         currentView = TODAY_VIEW;
+                        updateTaskVector = 2;
                         topYPos = 0;
                     }
 
                     if (ypos <= (540 - 145) - SELECTOR_HEIGHT * WEEKLY_VIEW && ypos >= (540 - 145) - SELECTOR_HEIGHT * (WEEKLY_VIEW + 1)) {
                         currentView = WEEKLY_VIEW;
+                        updateTaskVector = 3;
                         topYPos = 0;
                     }
 
@@ -661,6 +688,7 @@ public class AllTasks extends BasicGameState {
                             if (ypos < ((540 - 145) - SELECTOR_HEIGHT * 4) - topYPos2 - SELECTOR_HEIGHT * (i) && ypos > ((540 - 145) - SELECTOR_HEIGHT * 4) - topYPos2 - SELECTOR_HEIGHT * (i + 1)) {
                                 System.out.println(i);
                                 currentCategory = i;
+                                updateTaskVector = 4;
                                 currentView = CATEGORY_VIEW;
                             }
                         }
@@ -685,9 +713,11 @@ public class AllTasks extends BasicGameState {
                         clickSnd.play();
                     }
                 }
-
                 for(int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                     if((xpos >= 90*3+12 && xpos <= 90*3+12+boxNotDone.getWidth() && ypos <= 540 - (topYPos + 10 + 11 + (40 + 10) * j) && ypos >= 540 - (topYPos + 10 + 11 + (40 + 10) * j) - boxNotDone.getHeight())){
+                        String tempUserID = taskVector.get(i).getUserID();
+                        String tempTaskID = taskVector.get(i).getTaskID();
+                        TeazyDBMnpln.deleteTask(tempUserID,tempTaskID);
                         taskVector.remove(i);
                     }
                 }

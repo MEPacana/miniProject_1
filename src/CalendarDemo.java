@@ -25,6 +25,26 @@ public class CalendarDemo {
         return week;
     }
 
+    public static boolean isLate(String currentdate, String compareddate) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+            Date date1 = sdf.parse(currentdate);
+            Date date2 = sdf.parse(compareddate);
+
+            System.out.println();
+
+            if (date1.after(date2)) {
+                System.out.println("it is late");   //returns true if late
+                return true;
+            }
+
+            System.out.println();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
     public static String currentDate(){
         SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
         String currentdate = sdf.format(new Date());
