@@ -3,7 +3,8 @@ import org.lwjgl.input.Mouse;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Vector;
-
+import org.lwjgl.Sys;
+import java.text.ParseException;
 import org.newdawn.slick.*;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -50,6 +51,8 @@ public class AllTasks extends BasicGameState {
     Font sanFranUIDispThJava = null;
     Font sanFranUITxBoldBlueJava = null;
     Font sanFranUITxBoldBlue16Java = null;
+    UnicodeFont sanFranUITxBoldRed16 = null;
+
     UnicodeFont sanFranTxReg = null;
     UnicodeFont sanFranTxRegGrey = null;
     UnicodeFont sanFranTxBold = null;
@@ -59,6 +62,7 @@ public class AllTasks extends BasicGameState {
     UnicodeFont sanFranUIDispTh = null;
     UnicodeFont sanFranUITxBoldBlue = null;
     UnicodeFont sanFranTxLtRed = null;
+
     UnicodeFont sanFranUITxBoldBlue16 = null;
     UnicodeFont SanFranTxLtBlue14 = null;
     Image bg = null;
@@ -193,9 +197,17 @@ public class AllTasks extends BasicGameState {
 
         sanFranTxLtRed = new UnicodeFont(sanFranUITxtLtJava);
         sanFranTxLtRed.addAsciiGlyphs();
-        sanFranTxLtRed.getEffects().add(new ColorEffect(Color.red));
+        sanFranTxLtRed.getEffects().add(new ColorEffect(new Color(244, 54, 57)));
         try {
             sanFranTxLtRed.loadGlyphs();
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
+        sanFranUITxBoldRed16 = new UnicodeFont(sanFranUITxBoldBlue16Java);
+        sanFranUITxBoldRed16.addAsciiGlyphs();;
+        sanFranUITxBoldRed16.getEffects().add(new ColorEffect(new Color(244, 54, 57)));
+        try {
+            sanFranUITxBoldRed16.loadGlyphs();
         } catch (SlickException e) {
             e.printStackTrace();
         }
@@ -276,9 +288,8 @@ public class AllTasks extends BasicGameState {
                 //true if 3 input getTask and date
                 taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername(),CalendarDemo.currentDate(),true);
             }else if(updateTaskVector == 3){
-
+                taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
             }else if(updateTaskVector == 4){
-
                 //false if 3 input getTask and category
                 taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername(),categories.get(currentCategory),false);
             }else if(updateTaskVector == 6){
@@ -290,6 +301,10 @@ public class AllTasks extends BasicGameState {
         if(updateCategoryVector){
             updateCategoryVector = false;
             categories = TeazyDBMnpln.getCategories(CurrentUser.getUsername());
+        }
+
+        for(int i = 0; i < categories.size(); i++) {
+            System.out.println("ayyyyy" + categories.elementAt(i));
         }
 
 
@@ -367,7 +382,8 @@ public class AllTasks extends BasicGameState {
 
         //TODO incorporate user's full name
         SanFranTxLtWt14.drawString(65, 90, CurrentUser.getFirstname()+ " "+CurrentUser.getLastname());
-        sanFranUIDispTh.drawString(16, 86, Character.toString(CurrentUser.getFirstname().charAt(0)) +
+        sanFranUIDispTh.drawString(8 + (62 - 5 - sanFranUIDispTh.getWidth(Character.toString(CurrentUser.getFirstname().charAt(0)) +
+                Character.toString(CurrentUser.getLastname().charAt(0))))/2, 86, Character.toString(CurrentUser.getFirstname().charAt(0)) +
                 Character.toString(CurrentUser.getLastname().charAt(0)));
 
         for (int j = 0; j < 3; j++) {
@@ -380,9 +396,7 @@ public class AllTasks extends BasicGameState {
     }
 
     private void renderNewTask(GameContainer container, Graphics g) {
-
         g.drawImage(newTaskWindow, 460, 325);
-
         if(!hasSelectedNewTask && taskName.getText().equals("")) {
             sanFranTxRegGrey.drawString(502, 540-161, "Type Task Name");
         }
@@ -419,15 +433,13 @@ public class AllTasks extends BasicGameState {
             for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
                 sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
-                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()),
-                        topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-            /* TODO late
-             * if (taskVector.elementAt(i).isLate()) {
-             *      sanFranTxLtRed.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
-             * } else {
-             *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
-             * }
-             */
+                if(!CalendarDemo.isLate(CalendarDemo.currentDate(), taskVector.elementAt(i).getDeadlineNormalised())) {
+                    sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()),
+                            topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
+                } else {
+                    sanFranTxLtRed.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()),
+                            topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
+                }
                 g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
             }
         }
@@ -444,35 +456,45 @@ public class AllTasks extends BasicGameState {
                         taskVector.elementAt(i).getDescription());
                 sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()),
                         topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-            /* TODO late
-             * if (taskVector.elementAt(i).isLate()) {
-             *      sanFranTxLtRed.d
-             *      rawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
-             * } else {
-             *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
-             * }
-             */
                     g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
             }
         }
     }
 
     private void renderWeeklyView(Graphics g) {
-        if(taskVector.isEmpty()){
-            g.drawImage(empty, 320, 110);
-        } else {
-        /*for(int i = 0; i < 7 ; i++) {
-            sanFranUITxBoldBlue16.drawString(90*3 + 3, topYPos + 10 + 11 + (40 + 10) * 0, weekdayNames[(currentDay + i) %7]);
-            SanFranTxLtBlue14.drawString(90*3 +3 + sanFranUITxBoldBlue16.getWidth("Monday"), topYPos + 10 + 11 + (40 + 10) * 0, "  " + taskday + taskMonth);
-        }*/
-            sanFranUITxBoldBlue16.drawString(90 * 3 + 3, topYPos + 10 + 11 + (40 + 10) * 0, "Monday");
-            SanFranTxLtBlue14.drawString(90 * 3 + 3 + sanFranUITxBoldBlue16.getWidth("Monday"), topYPos + 10 + 11 + (40 + 10) * 0, "  13 Maytember");
-            for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
-                g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
-                sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
-                sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-                g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
+        boolean isEmpty = true;
+        boolean isFirstTaskInDay;
+        int position = 0;
+        for(int i = 0; i < 7; i++) {
+            isFirstTaskInDay = true;
+            for(int j = 0; j < taskVector.size(); j++){
+                if(CalendarDemo.weeklyCalendar()[i].equals(taskVector.elementAt(j).getDeadlineNormalised())){
+                    if(isFirstTaskInDay) {
+                        try {
+                            sanFranUITxBoldBlue16.drawString(90 * 3 + 3, topYPos + 10 + 11 + (40 + 10) * position, CalendarDemo.whatdate(CalendarDemo.weeklyCalendar()[i]));
+                            SanFranTxLtBlue14.drawString(90 * 3 + 3 +
+                                    sanFranUITxBoldBlue16.getWidth(CalendarDemo.whatdate(taskVector.elementAt(j).getDeadline())),
+                                    topYPos + 10 + 11 + (40 + 10) * position, " " +
+                                            String.valueOf(taskVector.elementAt(j).getDeadlineDay()) + " " +
+                                            monthNames[taskVector.elementAt(j).getDeadlineMonth() - 1]);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        isFirstTaskInDay = false;
+                        position++;
+                    }
+
+                    g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * position);
+                    sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * position, taskVector.elementAt(j).getDescription());
+                    sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(j).getDeadlineNormalised()), topYPos + 10 + 13 + (40 + 10) * position, taskVector.elementAt(j).getDeadlineNormalised());
+                    g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * position);
+                    position++;
+                    isEmpty = false;
+                }
             }
+        }
+        if(isEmpty){
+            g.drawImage(empty, 320, 110);
         }
     }
 
@@ -485,13 +507,7 @@ public class AllTasks extends BasicGameState {
                 g.drawImage(taskBox, 90 * 3, topYPos + 10 + (40 + 10) * j);
                 sanFranTxReg.drawString(90 * 3 + 40, topYPos + 10 + 11 + (40 + 10) * j, taskVector.elementAt(i).getDescription());
                 sanFranTxLtBlue.drawString((90 * 3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).getDeadline()), topYPos + 10 + 13 + (40 + 10) * j, taskVector.elementAt(i).getDeadline());
-            /* TODO late
-             * if (taskVector.elementAt(i).isLate()) {
-             *      sanFranTxLtRed.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
-             * } else {
-             *      sanFranTxLtBlue.drawString((90*3 + 40) + 418 - sanFranTxLtBlue.getWidth(taskVector.elementAt(i).toStringDeadline()), topYPos + 10 + 13 + (40 + 10) * i, taskVector.elementAt(i).toStringDeadline());
-             * }
-             */
+
                     g.drawImage(boxNotDone, 90 * 3 + 12, topYPos + 10 + 11 + (40 + 10) * j);
             }
         }
@@ -638,7 +654,12 @@ public class AllTasks extends BasicGameState {
                     game.enterState(8);
                 }
                 if (xpos >= 66 && xpos <= 117 && ypos <= 376 && ypos >= 360){
+
                     isProfileSettingsSelected =false;
+                    taskVector.clear();
+                    categories.clear();
+                    updateCategoryVector = true;
+                    updateTaskVector = 1;
                     game.enterState(0);
                 }
             } else if (isAddingNewCategory){
@@ -732,12 +753,35 @@ public class AllTasks extends BasicGameState {
                         clickSnd.play();
                     }
                 }
-                for(int i = 0, j = 1; i < taskVector.size(); i++, j++) {
-                    if((xpos >= 90*3+12 && xpos <= 90*3+12+boxNotDone.getWidth() && ypos <= 540 - (topYPos + 10 + 11 + (40 + 10) * j) && ypos >= 540 - (topYPos + 10 + 11 + (40 + 10) * j) - boxNotDone.getHeight())){
-                        String tempUserID = taskVector.get(i).getUserID();
-                        String tempTaskID = taskVector.get(i).getTaskID();
-                        TeazyDBMnpln.deleteTask(tempUserID,tempTaskID);
-                        taskVector.remove(i);
+                if(currentView != WEEKLY_VIEW) {
+                    for (int i = 0, j = 1; i < taskVector.size(); i++, j++) {
+                        if ((xpos >= 90 * 3 + 12 && xpos <= 90 * 3 + 12 + boxNotDone.getWidth() && ypos <= 540 - (topYPos + 10 + 11 + (40 + 10) * j) && ypos >= 540 - (topYPos + 10 + 11 + (40 + 10) * j) - boxNotDone.getHeight())) {
+                            String tempUserID = taskVector.get(i).getUserID();
+                            String tempTaskID = taskVector.get(i).getTaskID();
+                            TeazyDBMnpln.deleteTask(tempUserID, tempTaskID);
+                            taskVector.remove(i);
+                        }
+                    }
+                } else {
+                    boolean isFirstTaskInDay;
+                    int position = 0, taskIndex = 0;
+                    for(int i = 0; i < 7; i++) {
+                        isFirstTaskInDay = true;
+                        for(int j = 0; j < taskVector.size(); j++){
+                            if(CalendarDemo.weeklyCalendar()[i].equals(taskVector.elementAt(j).getDeadlineNormalised())){
+                                if(isFirstTaskInDay) {
+                                    isFirstTaskInDay = false;
+                                    position++;
+                                }
+                                if ((xpos >= 90 * 3 + 12 && xpos <= 90 * 3 + 12 + boxNotDone.getWidth() && ypos <= 540 - (topYPos + 10 + 11 + (40 + 10) * position) && ypos >= 540 - (topYPos + 10 + 11 + (40 + 10) * position) - boxNotDone.getHeight())) {
+                                    String tempUserID = taskVector.get(j).getUserID();
+                                    String tempTaskID = taskVector.get(j).getTaskID();
+                                    TeazyDBMnpln.deleteTask(tempUserID, tempTaskID);
+                                    taskVector.remove(j);
+                                }
+                                position++;
+                            }
+                        }
                     }
                 }
             }

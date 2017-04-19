@@ -13,6 +13,16 @@ public class TaskClass {
         deadline = "<Vous pouvez le faire un jour>";
     }
 
+    public int getDeadlineMonth() { return deadlineInt[0]; }
+
+    public int getDeadlineDay() { return deadlineInt[1]; }
+
+    public int getDeadlineYear() { return deadlineInt[2]; }
+    public String getDeadlineNormalised(){
+        String a = String.valueOf(deadlineInt[0]) + "/" + String.valueOf(deadlineInt[1]) + "/" + String.valueOf(deadlineInt[2]);
+        return a;
+    }
+
     public TaskClass (String desc) {
         this();
         userID = CurrentUser.getUsername();

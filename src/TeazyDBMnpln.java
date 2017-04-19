@@ -162,10 +162,11 @@ public class TeazyDBMnpln {
                 addCategoryDB(tempUserID,tempCategory);
             }
             else if(choice == 15){
-                String tempCategory;
-                System.out.println("Category");
+                String tempCategory,tempuserID;
+                System.out.println("Userid,Category");
+                tempuserID = sc.next();
                 tempCategory = sc.next();
-                if(categoryExists(tempCategory)){
+                if(categoryExists(tempuserID,tempCategory)){
                     System.out.println("Category Exists");
                 }else{
                     System.out.println("Category Doesn't Exist");
@@ -201,21 +202,22 @@ public class TeazyDBMnpln {
         }
     }
 
-    public static void addTaskDB( String userID, String description, String category,String deadline){
+    public static boolean addTaskDB( String userID, String description, String category,String deadline){
         String taskID;
         taskID = generateTaskID(userID);
         String sMakeInsert = "INSERT INTO TASK VALUES('" + taskID + "','"+userID+"','" + description +
                 "','" + category + "','" + deadline +"')";
         if(!usernameExists(userID)){
-            System.out.println("Username: "+userID+" does not exist");
-        }else if(!categoryExists(category)){
-            System.out.println("Category: "+category+" does not exist");
+            return false;
+        }else if(!categoryExists(userID, category)){
+            return false;
         }else{
             System.out.println("Nisud diri");
             System.out.println("UserID: "+userID+"\ntaskID"+taskID+"\ndescription: "+description+
                     "\ncategory: "+category+"\ndeadline"+deadline);
             insertToDB(sMakeInsert); // general insert
         }
+        return true;
     }
 
     public static void addCategoryDB( String userID, String category){
@@ -361,15 +363,17 @@ public class TeazyDBMnpln {
         return false;
     }
 
-    public static boolean categoryExists(String category) {
-        String sMakeSelect = new String("SELECT category FROM CATEGORYLIST WHERE category = ?");
+    public static boolean categoryExists(String userID, String category) {
+        String sMakeSelect = new String("SELECT category FROM CATEGORYLIST WHERE category = ? AND WHERE" +
+                "userID = ?");
        try {
             if (dbExists("TeazyDB.db")) {
                 try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
                      PreparedStatement pstmt = conn.prepareStatement(sMakeSelect)) {
                     pstmt.setString(1, category);
-                    ResultSet rs = pstmt.executeQuery();
+                    pstmt.setString(2, userID);
 
+                    ResultSet rs = pstmt.executeQuery();
                     if (!rs.isBeforeFirst()) {
                         System.out.println("Category does not exist");
                         return false;

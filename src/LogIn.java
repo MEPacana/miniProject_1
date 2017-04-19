@@ -93,6 +93,7 @@ public class LogIn extends BasicGameState {
                     System.out.println("Current user taskcount: " + CurrentUser.getTaskcount());
 
                     initialize(username,password);
+                    isPasswordError = isUsernameError = false;
                     game.enterState(4); //go to main user
                 }else{
                     if(!errorSnd.playing()){
