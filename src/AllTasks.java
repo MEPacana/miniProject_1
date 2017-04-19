@@ -281,6 +281,8 @@ public class AllTasks extends BasicGameState {
 
                 //false if 3 input getTask and category
                 taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername(),categories.get(currentCategory),false);
+            }else if(updateTaskVector == 6){
+                taskVector = TeazyDBMnpln.sortTaskVector(taskVector);
             }
             updateTaskVector = 0;
 
@@ -289,6 +291,8 @@ public class AllTasks extends BasicGameState {
             updateCategoryVector = false;
             categories = TeazyDBMnpln.getCategories(CurrentUser.getUsername());
         }
+
+
         if(isProfileSettingsSelected){
             renderProfileSettings(g);
         }
@@ -387,6 +391,15 @@ public class AllTasks extends BasicGameState {
         }
         if(!hasSelectedCategory && category.getText().equals("")) {
             sanFranTxRegGrey.drawString(502, 540-89, "Set category");
+        }
+        if(hasSelectedNewTask){
+            taskName.setFocus(true);
+        }
+        if(hasSelectedDeadline){
+            deadline.setFocus(true);
+        }
+        if(hasSelectedCategory){
+            category.setFocus(true);
         }
 
         taskName.render(container, g);
@@ -490,7 +503,9 @@ public class AllTasks extends BasicGameState {
         if(!hasSelectedCategoryName && newCategoryName.getText().equals("")) {
             sanFranTxRegGrey.drawString(51, newCatBoxYPos + 9, "Enter Category Name");
         }
-
+        if(hasSelectedCategoryName){
+            newCategoryName.setFocus(true);
+        }
         newCategoryName.setLocation(21 + 30, newCatBoxYPos + 9);
         newCategoryName.render(container, g);
     }
@@ -589,7 +604,7 @@ public class AllTasks extends BasicGameState {
                                         tempCategory = "General";
                                     taskVector.addElement(new TaskClass(tempTaskName, tempCategory, tempDeadline));
                                     TeazyDBMnpln.addTaskDB(tempUserName, tempTaskName, tempCategory, tempDeadline);
-
+                                    updateTaskVector = 6;
                                     if(!clickSnd.playing()){
                                         clickSnd.play();
                                     }
@@ -618,10 +633,13 @@ public class AllTasks extends BasicGameState {
                     initialize(category);
                 }
             } else if (isProfileSettingsSelected) {
-                if(xpos >= 53 && xpos <= 219 && ypos <= 464 && ypos >= 342){
-                    //TODO edit profile/sign out
-                } else {
+                if(xpos >= 66 && xpos <= 131 && ypos <= 412 && ypos >= 391){
                     isProfileSettingsSelected = false;
+                    game.enterState(8);
+                }
+                if (xpos >= 66 && xpos <= 117 && ypos <= 376 && ypos >= 360){
+                    isProfileSettingsSelected =false;
+                    game.enterState(0);
                 }
             } else if (isAddingNewCategory){
                 if(!isCatAlreadyExists){
@@ -637,6 +655,7 @@ public class AllTasks extends BasicGameState {
                             }
                             else {
                                 isAddingNewCategory = false;
+                                isCatAlreadyExists = false;
                                 categories.addElement(newCategoryName.getText());
                                 TeazyDBMnpln.addCategoryDB(CurrentUser.getUsername(),newCategoryName.getText());
                                 if(currentView == ALL_TASKS){

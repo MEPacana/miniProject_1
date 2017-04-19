@@ -37,7 +37,6 @@ public class NonEdit extends BasicGameState {
         firstname.setFocus(false);
         firstname.setConsumeEvents(false);
         firstname.setAcceptingInput(false);
-        firstname.setText("Noah Dominic");
 
         lastname.setBorderColor(Color.transparent);
         lastname.setBackgroundColor(Color.transparent);
@@ -46,7 +45,6 @@ public class NonEdit extends BasicGameState {
         lastname.setFocus(false);
         lastname.setConsumeEvents(false);
         lastname.setAcceptingInput(false);
-        lastname.setText("Silvio");
 
         username.setBorderColor(Color.transparent);
         username.setBackgroundColor(Color.transparent);
@@ -55,7 +53,6 @@ public class NonEdit extends BasicGameState {
         username.setFocus(false);
         username.setConsumeEvents(false);
         username.setAcceptingInput(false);
-        username.setText("malupethbhouzx");
 
         password.setBorderColor(Color.transparent);
         password.setBackgroundColor(Color.transparent);
@@ -64,7 +61,6 @@ public class NonEdit extends BasicGameState {
         password.setFocus(false);
         password.setConsumeEvents(false);
         password.setAcceptingInput(false);
-        password.setText("swaggerzxs");
 
     }
 
@@ -86,6 +82,11 @@ public class NonEdit extends BasicGameState {
         username.render(container,g);
         password.render(container,g);
         g.drawString(mouse, 50, 100);
+        firstname.setText(CurrentUser.getFirstname());
+        lastname.setText(CurrentUser.getLastname());
+        username.setText(CurrentUser.getUsername());
+        password.setText(CurrentUser.getPassword());
+
     }
 
     @Override
@@ -108,7 +109,7 @@ public class NonEdit extends BasicGameState {
         }
         if((xpos>20 && xpos<85) && (ypos>483 && ypos<518) ){
             if(input.isMousePressed(0)){
-                game.enterState(0); //TRY RA NI NGA LANDING STATE OKEH
+                game.enterState(4); //back to all tasks
             }
         }
         if((xpos>525 && xpos<572) && (ypos>72 && ypos<95) ){

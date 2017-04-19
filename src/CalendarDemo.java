@@ -24,27 +24,6 @@ public class CalendarDemo {
         }
         return week;
     }
-
-    public static boolean isLate(String currentdate, String compareddate) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
-            Date date1 = sdf.parse(currentdate);
-            Date date2 = sdf.parse(compareddate);
-
-            System.out.println();
-
-            if (date1.after(date2)) {
-                System.out.println("it is late");   //returns true if late
-                return true;
-            }
-
-            System.out.println();
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-        return false;
-    }
-
     public static String currentDate(){
         SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
         String currentdate = sdf.format(new Date());
@@ -69,7 +48,6 @@ public class CalendarDemo {
         }
         return true;
     }
-
     public static ArrayList<String> dateSorter(ArrayList<String> datestring) {
         Collections.sort(datestring, new Comparator<String>() {
             DateFormat f = new SimpleDateFormat("M/dd/yyyy");
@@ -86,5 +64,33 @@ public class CalendarDemo {
             System.out.println(s);
         }
         return datestring;
+    }
+    //first argument should be the current date and the second is the to be compared date
+
+    public static boolean isLate(String currentdate, String compareddate) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
+            Date date1 = sdf.parse(currentdate);
+            Date date2 = sdf.parse(compareddate);
+
+            System.out.println();
+
+            if (date1.after(date2)) {
+                System.out.println("it is late");   //returns true if late
+                return true;
+            }
+
+            System.out.println();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    public static String whatdate(String date) throws ParseException {
+        SimpleDateFormat newDateFormat = new SimpleDateFormat("M/dd/yyyy");
+        Date MyDate = newDateFormat.parse("12/16/1998");
+        newDateFormat.applyPattern("EEEE");
+        String mydate = newDateFormat.format(MyDate);
+        return mydate;
     }
 }

@@ -12,6 +12,7 @@ public class SignUp extends BasicGameState {
     private TextField firstname, lastname, username, password, retypepass, currentschool;
     private boolean isFirstTimeUsername = true, isFirstTimePassword = true, isFirstTimeFirstName = true, isFirstTimeLastName = true, isFirstTimeRetypePass = true, isFirstTimeCurrentSchool = true;
     private Sound clickSnd, errorSnd;
+    private boolean usernameexist = false, hasspaces = false, passwordnotlong = false, passwordmismatch1 = false;
     public SignUp(int signup) {
     }
 
@@ -32,21 +33,40 @@ public class SignUp extends BasicGameState {
         retypepass = new TextField(container, container.getDefaultFont(), 291, 315, 224, 20);
         currentschool  = new TextField(container, container.getDefaultFont(), 291, 349, 224, 20);
         initialize(firstname, lastname,username,password,retypepass,currentschool);
+        usernameexist =  hasspaces =  passwordnotlong =  passwordmismatch1 = false;
+        isFirstTimeUsername = isFirstTimePassword = isFirstTimeFirstName =  isFirstTimeLastName = isFirstTimeRetypePass =  isFirstTimeCurrentSchool = true;
     }
 
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         Image bg = new Image("res/Components/img-bg01-03.png");
         Image signinform = new Image("res/Components/02 sign up/signinform.png");
+        Image passwordmismatch = new Image("res/Components/02 sign up/passwordmismatch.png");
+        Image usernamealreadyexists = new Image("res/Components/02 sign up/usernamealreadyexists.png");
+        Image usernamehasspaces = new Image("res/Components/02 sign up/usernamehasspaces.png");
+        Image passwordnotlong1 = new Image("res/Components/02 sign up/usernamenotlong.png");
+
         g.drawImage(bg,0,0);
         g.drawImage(signinform, 230,100);
-        //g.drawString(mouse, 50, 100);
+        g.drawString(mouse, 0, 0);
         firstname.render(container,g);
         lastname.render(container,g);
         username.render(container,g);
         password.render(container,g);
         retypepass.render(container,g);
         currentschool.render(container,g);
+        if(passwordmismatch1) {
+            g.drawImage(passwordmismatch, 517, 315);
+        }
+        if(usernameexist) {
+            g.drawImage(usernamealreadyexists, 517, 248);
+        }
+        if(hasspaces) {
+            g.drawImage(usernamehasspaces, 517, 248);
+        }
+        if(passwordnotlong) {
+            g.drawImage(passwordnotlong1, 517, 281);
+        }
     }
 
     @Override
@@ -62,6 +82,7 @@ public class SignUp extends BasicGameState {
                     clickSnd.play();
                 }
                 initialize(firstname, lastname,username,password,retypepass,currentschool);
+                usernameexist =  hasspaces =  passwordnotlong =  passwordmismatch1 = false;
                 isFirstTimeFirstName = isFirstTimeLastName = isFirstTimeUsername = isFirstTimePassword = isFirstTimeRetypePass = isFirstTimeCurrentSchool = true;
                 game.enterState(0); //go to landing state
             }
@@ -69,7 +90,23 @@ public class SignUp extends BasicGameState {
 
         else if((xpos>487 && xpos<509) && (ypos>122 && ypos<135) ){
             if(input.isMouseButtonDown(0)){
-                if(password.getText().equals(retypepass.getText())) {
+                if(!password.getText().equals(retypepass)){
+                    passwordmismatch1 = true;
+                    System.out.println("sayop ang password");
+                }
+                if(TeazyDBMnpln.usernameExists(username.getText())){
+                    usernameexist = true;
+                    System.out.println("naa nay sulod");
+                }
+                if (password.getText().length() < 6 || retypepass.getText().length() < 6){
+                    passwordnotlong = true;
+                    System.out.println("mubo ra siya");
+                }
+                if (username.getText().contains(" ") && !username.getText().equals("")){
+                    hasspaces = true;
+                    System.out.println("naay space");
+                }
+                if(!passwordmismatch1 && !usernameexist && !hasspaces && !passwordnotlong) {
                     if(!clickSnd.playing()){
                         clickSnd.play();
                     }

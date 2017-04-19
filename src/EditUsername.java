@@ -13,7 +13,9 @@ public class EditUsername extends BasicGameState {
     public TextField username;
     public TextField password;
     public String mouse = "";
-    public boolean isFirstTimeUsername = true;
+    Sound errorSnd, clickSnd;
+    public boolean isFirstTimeUsername = true, noteditusername = true;
+    public boolean usernameexists = false, hasspace = false;
 
     public EditUsername(int editusername) {
     }
@@ -26,7 +28,7 @@ public class EditUsername extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         container.setShowFPS(false);
-        isFirstTimeUsername = true;
+        isFirstTimeUsername = noteditusername = true;
         firstname = new TextField(container, container.getDefaultFont(), 233, 188, 198, 23);
         lastname = new TextField(container,container.getDefaultFont(),442,188,127,23);
         username = new TextField(container,container.getDefaultFont(),233,300,335,23);
@@ -39,7 +41,6 @@ public class EditUsername extends BasicGameState {
         firstname.setFocus(false);
         firstname.setConsumeEvents(false);
         firstname.setAcceptingInput(false);
-        firstname.setText("Noah Dominic");
 
         lastname.setBorderColor(Color.transparent);
         lastname.setBackgroundColor(Color.transparent);
@@ -48,7 +49,6 @@ public class EditUsername extends BasicGameState {
         lastname.setFocus(false);
         lastname.setConsumeEvents(false);
         lastname.setAcceptingInput(false);
-        lastname.setText("Silvio");
 
         username.setBorderColor(Color.transparent);
         username.setBackgroundColor(Color.transparent);
@@ -57,7 +57,6 @@ public class EditUsername extends BasicGameState {
         username.setFocus(false);
         username.setConsumeEvents(false);
         username.setAcceptingInput(true);
-        username.setText("malupethbhouzx");
 
         password.setBorderColor(Color.transparent);
         password.setBackgroundColor(Color.transparent);
@@ -66,7 +65,9 @@ public class EditUsername extends BasicGameState {
         password.setFocus(false);
         password.setConsumeEvents(false);
         password.setAcceptingInput(false);
-        password.setText("swaggerzxs");
+
+        errorSnd = new Sound("res/Sound/error.wav");
+        clickSnd = new Sound ("res/Sound/click.wav");
 
     }
 
@@ -77,6 +78,8 @@ public class EditUsername extends BasicGameState {
         Image notEditingName = new Image("res/Components/05 edit account/isNotEditingName.png");
         Image EditingUsername = new Image("res/Components/05 edit account/isEditingUsername.png");
         Image notEditingPassword = new Image("res/Components/05 edit account/isNotEditingPassword.png");
+        Image exists = new Image("res/Components/02 sign up/usernamealreadyexists.png");
+        Image spaces = new Image("res/Components/02 sign up/usernamehasspaces.png");
         g.drawImage(bg,0,0);
         g.drawImage(backbutton,20,20);
         g.drawImage(notEditingName,220,150);
@@ -87,6 +90,21 @@ public class EditUsername extends BasicGameState {
         username.render(container,g);
         password.render(container,g);
         g.drawString(mouse, 50, 100);
+        firstname.setText(CurrentUser.getFirstname());
+        lastname.setText(CurrentUser.getLastname());
+        if (noteditusername) {
+            username.setText(CurrentUser.getUsername());
+        }
+        password.setText(CurrentUser.getPassword());
+        if (usernameexists){
+            g.drawImage(exists,570,300);
+        }
+        if(hasspace){
+            g.drawImage(spaces,570,280);
+        }
+
+
+
     }
 
     @Override
@@ -98,20 +116,47 @@ public class EditUsername extends BasicGameState {
         Input input = container.getInput();	//keyboard and mouse input
 
         if(isFirstTimeUsername && username.hasFocus()) {
+            noteditusername = false;
             username.setText("");
             username.setTextColor(Color.black);
             isFirstTimeUsername = false;
         }
+        if (!username.hasFocus() && username.getText().equals("")){
+            username.setTextColor(Color.black);
+            username.setText(CurrentUser.getUsername());
+            isFirstTimeUsername = true;
+        }
         if((xpos>20 && xpos<85) && (ypos>483 && ypos<518) ){
             if(input.isMousePressed(0)){
+                isFirstTimeUsername = noteditusername = true;
+                usernameexists = hasspace = false;
                 game.enterState(8); //go back to nonedit state (back)
             }
         }
         if((xpos>525 && xpos<572) && (ypos>184 && ypos<207) ){
             if(input.isMousePressed(0)){
-                game.enterState(8); //go to non edit state
+                if(TeazyDBMnpln.usernameExists(username.getText())){
+                    usernameexists = true;
+                }
+                else{
+                    usernameexists = false;
+                }
+                if (username.getText().contains(" ")){
+                    hasspace = true;
+                }
+                else{
+                    hasspace = false;
+                }
+                if(!usernameexists && !hasspace && !username.getText().equals("")) {
+                        TeazyDBMnpln.updateUsername(CurrentUser.getUsername(),username.getText());
+                        CurrentUser.setUsername(username.getText());
+                        game.enterState(8); //go to non edit state
+                }else{
+                    if(!errorSnd.playing()) {
+                        errorSnd.play();
+                    }
+                }
             }
         }
-
     }
 }

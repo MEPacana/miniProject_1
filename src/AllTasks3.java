@@ -149,7 +149,6 @@ public class AllTasks3 extends BasicGameState {
             updateTaskVector = false;
             taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername());
         }
-
         renderLeftBar(g, currentView);
         renderAllTasks(g);
         if(isAddingNewTask){
@@ -303,6 +302,8 @@ public class AllTasks3 extends BasicGameState {
                     initialize(taskName);
                 }
             }
+
+
             else {
                 if (xpos >= 0 && xpos <= LEFTPANEL_WIDTH) {
                     if (ypos <= (540 - 145) - SELECTOR_HEIGHT && ypos >= (540 - 145) - SELECTOR_HEIGHT) {

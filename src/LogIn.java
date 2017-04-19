@@ -11,8 +11,9 @@ public class LogIn extends BasicGameState {
     private String mouse = "";
     private TextField username;
     private TextField password;
-    private boolean isFirstTimeUsername = true, isFirstTimePassword = true;
+    private boolean isFirstTimeUsername = true, isFirstTimePassword = true, isPasswordError = false, isUsernameError = false;
     private Sound clickSnd,errorSnd;
+
     public LogIn(int home) {
     }
 
@@ -23,6 +24,8 @@ public class LogIn extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
+        isFirstTimeUsername = isFirstTimePassword = true;
+        isPasswordError = isUsernameError = false;
         clickSnd = new Sound("res/Sound/click.wav");
         errorSnd = new Sound("res/Sound/error.wav");
         container.setShowFPS(false);
@@ -35,8 +38,17 @@ public class LogIn extends BasicGameState {
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         Image bg = new Image("res/Components/img-bg01-03.png");
         Image loginform = new Image("res/Components/03 log in/loginform.png");
+        Image passwordIncorrect = new Image("res/Components/03 log in/passwordincorrect.png");
+        Image usernameerror = new Image("res/Components/03 log in/usernameErr.png");
         g.drawImage(bg,0,0);
         g.drawImage(loginform, 255,160);
+        g.drawString(mouse,0,0);
+        if(isUsernameError) {
+            g.drawImage(usernameerror, 510, 255);
+        }
+        if(isPasswordError){
+            g.drawImage(passwordIncorrect,510,290);
+        }
         username.render(container,g);
         password.render(container,g);
     }
@@ -54,6 +66,7 @@ public class LogIn extends BasicGameState {
                 }
                 initialize(username,password);
                 isFirstTimeUsername = isFirstTimePassword = true;
+                isPasswordError = isUsernameError = false;
                 game.enterState(0); //go to landing state
             }
         }
@@ -85,8 +98,22 @@ public class LogIn extends BasicGameState {
                     if(!errorSnd.playing()){
                         errorSnd.play();
                     }
+                    if(!TeazyDBMnpln.usernameExists(username.getText())){
+                        isUsernameError = true;
+                    }
+                    isPasswordError = true;
                 }
                 //Added Check
+            }
+        }
+        if(isUsernameError){
+            if((xpos>630 && xpos<672) && (ypos>255 && ypos<268) ){
+                if(input.isMouseButtonDown(0)){
+                    initialize(username,password);
+                    isFirstTimeUsername = isFirstTimePassword = true;
+                    isPasswordError = isUsernameError = false;
+                    game.enterState(2);
+                }
             }
         }
 

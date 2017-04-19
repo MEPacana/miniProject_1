@@ -522,14 +522,28 @@ public class TeazyDBMnpln {
     public static void updateUsername(String userID, String username) {
         String sUpdateName = "UPDATE STUDENT SET userID = ?"
                 + "WHERE userID = ?";
+        String sUpdateName2 = "UPDATE TASK SET userID = ?"
+                + "WHERE userID = ?";
+        String sUpdateName3 = "UPDATE CATEGORYLIST SET userID = ?"
+                + "WHERE userID = ?";
+
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:TeazyDB.db");
-             PreparedStatement pstmt = conn.prepareStatement(sUpdateName)) {
+             PreparedStatement pstmt = conn.prepareStatement(sUpdateName);
+             PreparedStatement pstmt2 = conn.prepareStatement(sUpdateName2);
+             PreparedStatement pstmt3 = conn.prepareStatement(sUpdateName3);) {
 
             // set the corresponding param
             pstmt.setString(1, username);
+            pstmt2.setString(1, username);
+            pstmt3.setString(1, username);
             pstmt.setString(2, userID);
+            pstmt2.setString(2, userID);
+            pstmt3.setString(2, userID);
+
             // update
             pstmt.executeUpdate();
+            pstmt2.executeUpdate();
+            pstmt3.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
