@@ -57,7 +57,7 @@ public class WeekView extends BasicGameState {
         g.drawImage(iconalltasks,25, 155);
         g.drawImage(icontoday,25, 145+34+(34-24)/2);
         g.drawImage(iconthisweek,25,145+34*2+(34-24)/2);
-        g.drawString(categorylabel,25,270);
+        //g.drawString(categorylabel,25,270);
         g.drawImage(iconcategory,25,280);
         g.drawImage(empty, 320, 110);
         if (!addtask) {
@@ -81,9 +81,7 @@ public class WeekView extends BasicGameState {
 
         Input input = container.getInput();	//keyboard and mouse input
         if((xpos>0 && xpos<225) && (ypos>364 && ypos<389) ){
-            System.out.println("waaaaaaaay");
             if(input.isMouseButtonDown(0)){
-                System.out.println("i am hereeee");
                 initiliaze(taskname,duedate,setcategory);
                 isFirstTimeDueDateWV = isFirstTimeSetCategoryWV = isFirstTimeTaskNameWV = true;
                 game.enterState(4); //go to all tasks

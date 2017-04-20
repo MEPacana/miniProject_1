@@ -63,7 +63,7 @@ public class TodayView extends BasicGameState {
             setcategory.render(container,g);
         }
         g.drawImage(addnewcategory, 30,320);
-        g.drawString(mouse, 50, 100);
+       // g.drawString(mouse, 50, 100);
     }
 
     @Override
@@ -76,7 +76,6 @@ public class TodayView extends BasicGameState {
         if((xpos>0 && xpos<225) && (ypos>364 && ypos<389) ){
             if(input.isMouseButtonDown(0)){
                 initiliaze(taskname,duedate,setcategory);
-                System.out.println("wowzaaaaaaaaaa");
                 isFirstTimeTaskNameTV =  isFirstTimeDueDateTV = isFirstTimeSetCategoryTV = true;
                 game.enterState(4); //go to all tasks
             }

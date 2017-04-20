@@ -292,20 +292,15 @@ public class AllTasks extends BasicGameState {
             }else if(updateTaskVector == 4){
                 //false if 3 input getTask and category
                 taskVector = TeazyDBMnpln.getTasks(CurrentUser.getUsername(),categories.get(currentCategory),false);
-            }else if(updateTaskVector == 6){
-                taskVector = TeazyDBMnpln.sortTaskVector(taskVector);
             }
-            updateTaskVector = 0;
-
+            taskVector = TeazyDBMnpln.sortTaskVector(taskVector);
+            //updateTaskVector = 0;
         }
         if(updateCategoryVector){
-            updateCategoryVector = false;
+            //updateCategoryVector = false;
             categories = TeazyDBMnpln.getCategories(CurrentUser.getUsername());
         }
 
-        for(int i = 0; i < categories.size(); i++) {
-            System.out.println("ayyyyy" + categories.elementAt(i));
-        }
 
 
         if(isProfileSettingsSelected){
@@ -378,7 +373,7 @@ public class AllTasks extends BasicGameState {
         g.drawImage(icontoday,25, 145+34+(34-24)/2);
         g.drawImage(iconthisweek,25,145+34*2+(34-24)/2);
         g.drawImage(profileSettingsDots, 207, 510-422+profileSettingsDots.getHeight() );
-        g.drawString(mouse, 0, 0);
+        //g.drawString(mouse, 0, 0);
 
         //TODO incorporate user's full name
         SanFranTxLtWt14.drawString(65, 90, CurrentUser.getFirstname()+ " "+CurrentUser.getLastname());
@@ -590,14 +585,6 @@ public class AllTasks extends BasicGameState {
                                 hasSelectedDeadline = false;
                                 hasSelectedCategory = false;
                                 isAddingNewTask = false;
-
-/*                                try {
-                                    taskVector.addElement(new TaskClass(taskName.getText(),  category.getText(), deadline.getText()));
-                                } catch (Exception e) {
-                                    System.out.println("YO");
-                                    isWrongDateFormat = true;
-                                    isAddingNewTask = true;
-                                }*/
                                 String tempTaskName = taskName.getText();
                                 String tempUserName = CurrentUser.getUsername();
                                 String tempCategory = category.getText();
@@ -610,7 +597,7 @@ public class AllTasks extends BasicGameState {
                                         errorSnd.play();
                                     }
                                     isWrongDateFormat = true;
-                                }else if(!TeazyDBMnpln.categoryExists(tempCategory)){
+                                }else if(!TeazyDBMnpln.categoryExists(CurrentUser.getUsername(),tempCategory)){
                                     if(!errorSnd.playing()){
                                         errorSnd.play();
                                     }
@@ -620,7 +607,7 @@ public class AllTasks extends BasicGameState {
                                         tempCategory = "General";
                                     taskVector.addElement(new TaskClass(tempTaskName, tempCategory, tempDeadline));
                                     TeazyDBMnpln.addTaskDB(tempUserName, tempTaskName, tempCategory, tempDeadline);
-                                    updateTaskVector = 6;
+                                    //updateTaskVector = 6;
                                     if(!clickSnd.playing()){
                                         clickSnd.play();
                                     }
@@ -726,14 +713,12 @@ public class AllTasks extends BasicGameState {
                         int i = 0;
                         for (; i < categories.size(); i++) {
                             if (ypos < ((540 - 145) - SELECTOR_HEIGHT * 4) - topYPos2 - SELECTOR_HEIGHT * (i) && ypos > ((540 - 145) - SELECTOR_HEIGHT * 4) - topYPos2 - SELECTOR_HEIGHT * (i + 1)) {
-                                System.out.println(i);
                                 currentCategory = i;
                                 updateTaskVector = 4;
                                 currentView = CATEGORY_VIEW;
                             }
                         }
                         if (ypos < ((540 - 145) - SELECTOR_HEIGHT * 4) - topYPos2 - SELECTOR_HEIGHT * (i) && ypos > ((540 - 145) - SELECTOR_HEIGHT * 4) - topYPos2 - SELECTOR_HEIGHT * (i + 1)) {
-                            System.out.println(i);
                             currentView = CATEGORY_VIEW;
                             isAddingNewCategory = true;
                             newCatBoxYPos = (145 + SELECTOR_HEIGHT * 4) + topYPos2 + SELECTOR_HEIGHT * (i);

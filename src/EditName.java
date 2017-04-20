@@ -87,7 +87,7 @@ public class EditName extends BasicGameState {
         lastname.render(container,g);
         username.render(container,g);
         password.render(container,g);
-        g.drawString(mouse, 50, 100);
+        //g.drawString(mouse, 50, 100);
         if (noteditingfn) {
             firstname.setText(CurrentUser.getFirstname());
         }

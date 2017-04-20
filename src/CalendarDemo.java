@@ -16,18 +16,15 @@ public class CalendarDemo {
         SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
         Calendar cal = Calendar.getInstance();
         week[0] = sdf.format(cal.getTime());
-        System.out.println(sdf.format(cal.getTime()));
         for (int i = 1; i<7; i++){
             cal.add(Calendar.DATE,1);
             week[i] = sdf.format(cal.getTime());
-            System.out.println(sdf.format(cal.getTime()));
         }
         return week;
     }
     public static String currentDate(){
         SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
         String currentdate = sdf.format(new Date());
-        System.out.println(currentdate);
         return currentdate;
     }
 
@@ -41,9 +38,7 @@ public class CalendarDemo {
         try {
             //if not valid, it will throw ParseException
             Date date = sdf.parse(dateToValidate);
-            System.out.println(date);
-
-        } catch (ParseException e) {
+  } catch (ParseException e) {
             return false;
         }
         return true;
@@ -60,9 +55,6 @@ public class CalendarDemo {
                 }
             }
         });
-        for (String s : datestring) {
-            System.out.println(s);
-        }
         return datestring;
     }
     //first argument should be the current date and the second is the to be compared date
@@ -72,15 +64,9 @@ public class CalendarDemo {
             SimpleDateFormat sdf = new SimpleDateFormat("M/dd/yyyy");
             Date date1 = sdf.parse(currentdate);
             Date date2 = sdf.parse(compareddate);
-
-            System.out.println();
-
             if (date1.after(date2)) {
-                System.out.println("it is late");   //returns true if late
                 return true;
             }
-
-            System.out.println();
         } catch (ParseException ex) {
             ex.printStackTrace();
         }

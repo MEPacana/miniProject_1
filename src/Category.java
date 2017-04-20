@@ -88,7 +88,7 @@ public class Category extends BasicGameState{
             setcategory.render(container,g);
         }
         g.drawImage(addnewcategory, 30,320);
-        g.drawString(mouse, 50, 100);
+       // g.drawString(mouse, 50, 100);
     }
 
 

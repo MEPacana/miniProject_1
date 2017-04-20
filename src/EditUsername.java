@@ -91,7 +91,7 @@ public class EditUsername extends BasicGameState {
         lastname.render(container,g);
         username.render(container,g);
         password.render(container,g);
-        g.drawString(mouse, 50, 100);
+        //g.drawString(mouse, 50, 100);
         firstname.setText(CurrentUser.getFirstname());
         lastname.setText(CurrentUser.getLastname());
         if (noteditusername) {

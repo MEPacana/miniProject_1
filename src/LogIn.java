@@ -8,6 +8,7 @@ import org.newdawn.slick.state.StateBasedGame;
  * Created by Marie Curie on 01/04/2017.
  */
 public class LogIn extends BasicGameState {
+
     private String mouse = "";
     private TextField username;
     private TextField password;
@@ -42,7 +43,7 @@ public class LogIn extends BasicGameState {
         Image usernameerror = new Image("res/Components/03 log in/usernameErr.png");
         g.drawImage(bg,0,0);
         g.drawImage(loginform, 255,160);
-        g.drawString(mouse,0,0);
+       // g.drawString(mouse,0,0);
         if(isUsernameError) {
             g.drawImage(usernameerror, 510, 255);
         }
@@ -80,18 +81,11 @@ public class LogIn extends BasicGameState {
                     }
                     //ADDED THE CURRENT USER CLASS AND ITS COMPONENTS -CIONG
                     CurrentUser.setUsername(username.getText());
-                    System.out.println("Current user username: " + CurrentUser.getUsername());
                     CurrentUser.setPassword(password.getText());
-                    System.out.println("Current user password: " + CurrentUser.getPassword());
                     CurrentUser.setFirstname(TeazyDBMnpln.getFName(username.getText()));
-                    System.out.println("Current user firstname: " + CurrentUser.getFirstname());
                     CurrentUser.setLastname(TeazyDBMnpln.getLName(username.getText()));
-                    System.out.println("Current user lastname: " + CurrentUser.getLastname());
                     CurrentUser.setCurrentschool(TeazyDBMnpln.getSchool(username.getText()));
-                    System.out.println("Current user school: " + CurrentUser.getCurrentschool());
                     CurrentUser.setTaskcount(TeazyDBMnpln.getTaskCount(username.getText()));
-                    System.out.println("Current user taskcount: " + CurrentUser.getTaskcount());
-
                     initialize(username,password);
                     isPasswordError = isUsernameError = false;
                     game.enterState(4); //go to main user
@@ -122,8 +116,7 @@ public class LogIn extends BasicGameState {
             username.setText("");
             username.setTextColor(Color.black);
             isFirstTimeUsername = false;
-            System.out.println("misuload hahahahahha " + username.getText());
-        }
+      }
 
         if(isFirstTimePassword && password.hasFocus()) {
             password.setText("");

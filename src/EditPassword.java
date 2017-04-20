@@ -162,14 +162,20 @@ public class EditPassword extends BasicGameState {
         }
         if((xpos>525 && xpos<572) && (ypos>12 && ypos<36) ){
             if(input.isMousePressed(0)){
-                if(!retypepassword.getText().equals(password.getText())){
+                if(!password.getText().equals(retypepassword.getText())){
                     passwordmismatch = true;
+                }
+                else{
+                    passwordmismatch = false;
                 }
                 if (retypepassword.getText().length()<6 || password.getText().length()<6 ){
                     passwordnotlong = true;
                 }
+                else{
+                    passwordnotlong = false;
+                }
                 if(!passwordmismatch && !passwordnotlong) {
-                    //TODO DATABASE
+                    passwordnotlong = passwordmismatch = false;
                     CurrentUser.setPassword(password.getText());
                     TeazyDBMnpln.updatePassword(CurrentUser.getUsername(),password.getText());
                     game.enterState(8); //go to edit password
